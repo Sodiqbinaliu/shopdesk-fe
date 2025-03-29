@@ -1,19 +1,17 @@
 "use client";
 
-import { useState, Suspense } from "react";
-import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
-import { sendLoginEmail } from "@/services/loginEmail";
-import { getOrganization } from "@/services/getOrganization";
-import Illustration from "@/public/auth/illustration.svg";
-import Cube from "@/public/auth/cube.svg";
-import { AuthFooter } from "./footer";
 import Logo from "@/components/functional/logo";
-import { loginUser } from "@/services/auth";
-import { useStore } from "@/store/useStore";
-import { useDispatch } from "react-redux";
+import Cube from "@/public/auth/cube.svg";
+import Illustration from "@/public/auth/illustration.svg";
 import { authenticationSuccess } from "@/redux/features/auth/auth.slice";
+import { useStore } from "@/store/useStore";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useDispatch } from "react-redux";
+import { AuthFooter } from "./footer";
 export default function SignIn() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -33,12 +31,14 @@ function SignInContent() {
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/select-organization";
+  const redirectToParam = searchParams.get("redirectTo");
+  const redirectTo = redirectToParam
+    ? decodeURIComponent(redirectToParam.split("?")[0]) // Get only the first valid path
+    : "/select-organization";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-
     setTouched({ email: true, password: true });
 
     if (!email.trim() || !password.trim()) {
@@ -49,24 +49,28 @@ function SignInContent() {
     setLoading(true);
 
     try {
-      const data = await loginUser(email, password);
-      // console.log(data);
-      if (!data || data.error) {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      console.log("data from login:", data);
+
+      if (!response.ok) {
         throw new Error(data?.message || "Invalid email or password.");
       }
+
       dispatch(authenticationSuccess(data));
-      // const { first_name, last_name } = data.data;
-      // const organization = await getOrganization();
-      // await setOrganizationId(organization?.[0].id || "");
-      // await setOrganizationName(organization?.[0].name || "");
-
-      // sendLoginEmail(email, first_name, last_name);
-
-      // router.refresh();
 
       router.push(redirectTo);
     } catch (err: any) {
       setError(err.message || "Something went wrong. Please try again.");
+    } finally {
       setLoading(false);
     }
   };
@@ -133,6 +137,7 @@ function SignInContent() {
 
       <main className="size-full flex justify-center lg:justify-between items-center">
         {/* left */}
+
         <motion.div
           className="hidden lg:flex flex-col gap-8 justify-center items-center max-w-[278px]"
           initial="hidden"
@@ -140,18 +145,19 @@ function SignInContent() {
           variants={containerVariants}
         >
           <motion.div variants={itemVariants}>
-            <div className="flex flex-col gap-2">
-              <motion.div variants={logoVariants} whileHover={{ rotate: 10 }}>
-                <Image src={Cube} alt="cube" width={56} height={56} />
-              </motion.div>
-              <motion.h1
-                className="md:text-4xl lg:text-5xl font-bold"
-                variants={itemVariants}
-              >
-                ShopDesk
-              </motion.h1>
-            </div>
-
+            <Link href="/">
+              <div className="flex flex-col gap-2">
+                <motion.div variants={logoVariants} whileHover={{ rotate: 10 }}>
+                  <Image src={Cube} alt="cube" width={56} height={56} />
+                </motion.div>
+                <motion.h1
+                  className="md:text-4xl lg:text-5xl font-bold"
+                  variants={itemVariants}
+                >
+                  ShopDesk
+                </motion.h1>
+              </div>
+            </Link>
             <motion.p
               className="text-[#1B1B1B] mt-2 text-2xl font-bold"
               variants={itemVariants}

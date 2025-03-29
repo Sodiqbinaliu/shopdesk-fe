@@ -1,12 +1,13 @@
 "use client";
-import { useEffect, useState } from "react";
 import { getOrganization } from "@/services/getOrganization";
 import { useStore } from "@/store/useStore";
+import Cookies from "js-cookie";
+import { useEffect, useState } from "react";
 
-import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
 import Footer from "@/components/Footer";
+import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface Organization {
   id: string;
@@ -39,6 +40,7 @@ export default function OrganizationSelector() {
     setSelectedOrg(org);
     await setOrganizationId(org.id);
     await setOrganizationName(org.name);
+    Cookies.set("selected_organization", org.id, { expires: 1, path: "/" });
     router.push("/stock");
   };
 
