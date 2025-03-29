@@ -44,7 +44,7 @@ type State = {
   fetchMetrics: () => Promise<void>;
 };
 
-const getInitials = (name: string): string => {
+export const getInitials = (name: string): string => {
   return name
     .split(" ")
     .map((word) => word.charAt(0).toUpperCase())
@@ -71,7 +71,10 @@ export const useStore = create<State>()(
       metrics: [],
       isMetricsLoading: false,
       setOrganizationId: (organizationId) => set({ organizationId }),
-      setOrganizationName: (organizationName) => set({ organizationName }),
+      setOrganizationName: (organizationName) => {
+        set({ organizationName: organizationName });
+        set({ organizationInitial: getInitials(organizationName) });
+      },
       setOrganizationInitial: (organizationName) =>
         set({ organizationInitial: getInitials(organizationName) }),
       fetchProducts: async () => {

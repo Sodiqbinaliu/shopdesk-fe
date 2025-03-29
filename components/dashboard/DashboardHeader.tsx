@@ -12,7 +12,7 @@ import {
 import logout from "@/public/icons/_ui-log-out-02.svg";
 import settings from "@/public/icons/_ui-settings-01.svg";
 import { getOrganization } from "@/services/getOrganization";
-import { useStore } from "@/store/useStore";
+import { useStore, getInitials } from "@/store/useStore";
 import { ArrowLeftRight, ChevronDown, Plus } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -26,12 +26,10 @@ function Header({ onSettingsClick }: { onSettingsClick?: () => void }) {
   >([]);
   const [showOrgList, setShowOrgList] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const {
-    organizationName,
-    organizationInitial,
-    setOrganizationId,
-    setOrganizationName,
-  } = useStore();
+  const { organizationName, setOrganizationId, setOrganizationName } =
+    useStore();
+
+  const organizationInitial = getInitials(organizationName);
 
   useEffect(() => {
     const fetchOrganizations = async () => {
@@ -44,7 +42,6 @@ function Header({ onSettingsClick }: { onSettingsClick?: () => void }) {
     };
     fetchOrganizations();
   }, []);
-  console.log(organizationInitial);
 
   const handleSelection = async (org: { id: string; name: string }) => {
     setIsLoading(true);
