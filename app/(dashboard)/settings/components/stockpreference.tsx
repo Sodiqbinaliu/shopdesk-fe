@@ -468,6 +468,5 @@ const StockPreference = () => {
     </>
   );
 };
-};
 
 export default StockPreference;
