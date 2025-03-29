@@ -39,7 +39,7 @@ const AuthButtons = () => {
         className="btn-outline flex items-center gap-2"
       >
         {loading && <Icons.LoadingIcon />}
-        <span>Logout</span>
+        <span>{loading ? "Logging out..." : "Logout"}</span>
       </button>
 
       <button
