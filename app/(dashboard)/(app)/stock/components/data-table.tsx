@@ -38,7 +38,7 @@ interface DataTableProps<TData extends { id: string | number }, TValue> {
 }
 
 export function DataTable<TData extends { id: string | number }, TValue>({
-  columns,
+  columns: baseColumns,
   data,
   loading,
   error,
@@ -54,6 +54,27 @@ export function DataTable<TData extends { id: string | number }, TValue>({
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
   const [isAddStockModalOpen, setIsAddStockModalOpen] = React.useState(false);
 
+  const updateSelectedRow = React.useCallback((updatedData: Partial<TData>) => {
+    setSelectedRow((prev) => {
+      if (prev && prev.id === updatedData.id) {
+        return { ...prev, ...updatedData };
+      }
+      return prev;
+    });
+  }, []);
+
+  const columns = React.useMemo(() => {
+    return baseColumns.map((col) => ({
+      ...col,
+      cell: (props: any) => {
+        if (typeof col.cell === "function") {
+          return col.cell({ ...props, updateSelectedRow });
+        }
+        return props.getValue();
+      },
+    }));
+  }, [baseColumns, updateSelectedRow]);
+
   const table = useReactTable({
     data,
     columns,
@@ -62,6 +83,9 @@ export function DataTable<TData extends { id: string | number }, TValue>({
       columnVisibility,
       rowSelection,
       columnFilters,
+    },
+    meta: {
+      updateSelectedRow,
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,

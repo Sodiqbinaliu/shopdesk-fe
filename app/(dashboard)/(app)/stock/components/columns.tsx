@@ -50,7 +50,7 @@ export const columns: ColumnDef<Stock>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="ITEM NAME" />
     ),
-    cell: ({ row }) => {
+    cell: ({ row, updateSelectedRow }) => {
       const value = row.getValue<string>("name");
       return (
         <EditableCell
@@ -58,6 +58,7 @@ export const columns: ColumnDef<Stock>[] = [
           accessorKey="name"
           stockId={row.original.id}
           rowData={row.original}
+          updateSelectedRow={updateSelectedRow}
           onChange={(val) => {
             row.original.name = val;
           }}
@@ -70,9 +71,8 @@ export const columns: ColumnDef<Stock>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="SELL PRICE" />
     ),
-    cell: ({ row }) => {
+    cell: ({ row, updateSelectedRow }) => {
       const value = row.getValue<string>("buying_price");
-
       return (
         <EditableCell
           value={value}
@@ -80,6 +80,7 @@ export const columns: ColumnDef<Stock>[] = [
           currency={row.original.currency_code}
           stockId={row.original.id}
           rowData={row.original}
+          updateSelectedRow={updateSelectedRow}
           onChange={(val) => {
             row.original.buying_price = Number(val);
           }}
@@ -93,15 +94,15 @@ export const columns: ColumnDef<Stock>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="AVAILABLE" />
     ),
-    cell: ({ row }) => {
+    cell: ({ row, updateSelectedRow }) => {
       const value = row.original.quantity;
-
       return (
         <EditableCell
           value={String(value) || "0"}
           accessorKey="quantity"
           stockId={row.original.id}
           rowData={row.original}
+          updateSelectedRow={updateSelectedRow}
           onChange={(val) => {
             row.original.quantity = Number(val);
           }}
