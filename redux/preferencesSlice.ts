@@ -28,7 +28,7 @@ interface PreferencesState {
 const initialState: PreferencesState = {
   currency: 'NGN',
   paymentMethods: {
-    bankTransfer: true, 
+    bankTransfer: true,
     paypal: false,
     stripe: false,
   },
