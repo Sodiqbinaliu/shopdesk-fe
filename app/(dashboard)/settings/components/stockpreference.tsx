@@ -1,6 +1,5 @@
 'use client'
 import { Button } from '@/components/ui/button';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import {
   updateCurrency,
   setPaymentMethod,
@@ -10,14 +9,6 @@ import {
   resetPreferences
 } from '@/redux/preferencesSlice';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import {
-  updateCurrency,
-  setPaymentMethod,
-  updateAccountDetails,
-  updateTaxSettings,
-  updateInventorySettings,
-  resetPreferences
-} from '@/redux/preferencesSlice';
 import { useState } from 'react';
 import {
   AlertDialog,
