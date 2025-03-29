@@ -4,10 +4,11 @@ import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import LogoPhoto from "@/public/modal-images/Logo-Wrapper.png";
-import { Plus } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { useUpdateOrganizationImageMutation } from "@/redux/features/organizationImage/organizationImage.api";
 import { useGetOrganizationsQuery } from "@/redux/features/auth/auth.api";
 import { useStore } from "@/store/useStore";
+import { toast } from "sonner";
 
 export default function BusinessImage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -21,13 +22,25 @@ export default function BusinessImage() {
     (eachOrganization) => organizationId === eachOrganization.id
   );
   const image = currentOrg?.image_url;
-  const [updateImage] = useUpdateOrganizationImageMutation();
+  const [updateImage, { isLoading: updateLoading }] =
+    useUpdateOrganizationImageMutation();
+  const handleUpdateImage = async (form: FormData) => {
+    try {
+      await updateImage({
+        organization_id: organizationId,
+        formData: form,
+      }).unwrap();
+      toast.success("Organization image updated successfully!");
+    } catch (error) {
+      toast.error("Failed to update organization image.");
+    }
+  };
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const form = new FormData();
       form.append("file", file);
-      updateImage({ organization_id: organizationId, formData: form });
+      handleUpdateImage(form);
     }
   };
   return (
@@ -49,8 +62,18 @@ export default function BusinessImage() {
         className="py-3 px-6 rounded-[12px] bg-white border border-[#1b1b1b] text-[#1b1b1b]"
         onClick={handleButtonClick}
       >
-        <Plus className="w-6 h-6" />
-        Change Photo
+        {updateLoading ? (
+          <>
+            {" "}
+            <Loader2 className="h-6 w-6 animate-spin text-gray-500" />
+            Updating...
+          </>
+        ) : (
+          <>
+            <Plus className="w-6 h-6" />
+            Change Photo
+          </>
+        )}
       </Button>
       <input
         type="file"

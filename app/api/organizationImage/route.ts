@@ -54,7 +54,7 @@ export async function PATCH(request: NextRequest) {
     return handleResponse(response);
   } catch (error) {
     NextResponse.json({
-      message: error instanceof Error ? error : "Internal Server Error",
+      message: error instanceof Error ? error.message : "Internal Server Error",
     });
   }
 }
@@ -76,9 +76,7 @@ async function handleResponse(response: Response) {
   if (!response.ok)
     return NextResponse.json(
       {
-        message:
-          "Request failed with Status code: " +
-          response.status,
+        message: "Request failed with Status code: " + response.status,
       },
       { status: response.status }
     );
