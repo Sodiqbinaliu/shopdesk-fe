@@ -1,5 +1,7 @@
-import { Metadata } from 'next';
-import CreateOrganization from './_components/CreateOrganization';
+import { Metadata } from "next";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import CreateOrganization from "./_components/CreateOrganization";
 
 export const metadata: Metadata = {
   title: 'Create Organization',
@@ -7,7 +9,12 @@ export const metadata: Metadata = {
     'Set up your organization to start managing your business with ShopDesk.',
 };
 
-const CreateOrganizationPage = () => {
+const CreateOrganizationPage = async () => {
+  const cookieStore = await cookies(); // ✅ await is now required
+  const token = cookieStore.get("refresh_token")?.value;
+  if (!token) {
+    redirect("/sign-in"); // or wherever your login page is
+  }
   return <CreateOrganization />;
 };
 
