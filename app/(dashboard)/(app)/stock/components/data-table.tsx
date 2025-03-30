@@ -37,6 +37,10 @@ interface DataTableProps<TData extends { id: string | number }, TValue> {
   error?: boolean | null;
 }
 
+export interface TableMeta<TData> {
+  updateSelectedRow: (updatedData: Partial<TData>) => void;
+}
+
 export function DataTable<TData extends { id: string | number }, TValue>({
   columns: baseColumns,
   data,
@@ -68,7 +72,13 @@ export function DataTable<TData extends { id: string | number }, TValue>({
       ...col,
       cell: (props: any) => {
         if (typeof col.cell === "function") {
-          return col.cell({ ...props, updateSelectedRow });
+          return col.cell({
+            ...props,
+            table: {
+              ...props.table,
+              options: { ...props.table.options, meta: { updateSelectedRow } },
+            },
+          });
         }
         return props.getValue();
       },
@@ -86,7 +96,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
     },
     meta: {
       updateSelectedRow,
-    },
+    } as TableMeta<TData>,
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,

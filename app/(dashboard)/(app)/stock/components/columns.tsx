@@ -11,6 +11,7 @@ import { useStore } from "@/store/useStore";
 import { getDateStartRange } from "@/utils";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useDispatch, useSelector } from "react-redux";
+import { TableMeta } from "./data-table";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 import type { Stock } from "./data/schema";
@@ -50,8 +51,11 @@ export const columns: ColumnDef<Stock>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="ITEM NAME" />
     ),
-    cell: ({ row, updateSelectedRow }) => {
+    cell: ({ row, table }) => {
       const value = row.getValue<string>("name");
+      const updateSelectedRow = (
+        table.options.meta as TableMeta<typeof row.original>
+      )?.updateSelectedRow;
       return (
         <EditableCell
           value={value}
@@ -71,8 +75,11 @@ export const columns: ColumnDef<Stock>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="SELL PRICE" />
     ),
-    cell: ({ row, updateSelectedRow }) => {
+    cell: ({ row, table }) => {
       const value = row.getValue<string>("buying_price");
+      const updateSelectedRow = (
+        table.options.meta as TableMeta<typeof row.original>
+      )?.updateSelectedRow;
       return (
         <EditableCell
           value={value}
@@ -94,8 +101,11 @@ export const columns: ColumnDef<Stock>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="AVAILABLE" />
     ),
-    cell: ({ row, updateSelectedRow }) => {
+    cell: ({ row, table }) => {
       const value = row.original.quantity;
+      const updateSelectedRow = (
+        table.options.meta as TableMeta<typeof row.original>
+      )?.updateSelectedRow;
       return (
         <EditableCell
           value={String(value) || "0"}
