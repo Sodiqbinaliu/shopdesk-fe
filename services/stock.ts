@@ -63,7 +63,7 @@ type ProductResponse = {
   next_page: number | null;
   items: Product[];
 };
-const token = await getAccessToken();
+
 export async function CreateProduct(
   productName: string,
   unique_id: string,
@@ -145,9 +145,11 @@ export async function AddStock(
     throw error;
   }
 }
+
 export async function GetProduct(): Promise<StockResponse> {
   const organization_id = useStore.getState().organizationId;
   try {
+    const token = await getAccessToken();
     const response = await fetch(
       `/api/product/get?organization_id=${organization_id}`,
       {
@@ -175,6 +177,7 @@ export async function GetProduct(): Promise<StockResponse> {
 export async function GetStock(product_id: string): Promise<StockResponse> {
   const organization_id = useStore.getState().organizationId;
   try {
+    const token = await getAccessToken();
     const response = await fetch(
       `/api/stocks/get?organization_id=${organization_id}&product_id=${product_id}`,
       {

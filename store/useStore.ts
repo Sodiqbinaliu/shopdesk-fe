@@ -80,7 +80,8 @@ export const useStore = create<State>()(
       fetchProducts: async () => {
         set({ isProductLoading: true });
         try {
-          const res = await fetch("/api/product/get");
+          const organization_id = useStore.getState().organizationId;
+          const res = await fetch(`/api/product/get?organization_id=${organization_id}`);
           const data = await res.json();
           set({ products: data });
         } catch (error) {
