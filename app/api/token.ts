@@ -1,6 +1,6 @@
 export const getAccessToken = async (): Promise<string | null> => {
   try {
-    const response = await fetch("api/auth/token", {
+    const response = await fetch("/api/auth/token", {
       method: "GET",
       credentials: "include",
     });
