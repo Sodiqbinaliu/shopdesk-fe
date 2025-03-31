@@ -10,19 +10,20 @@ const LogoutButton = ({ className }: { className?: string }) => {
   const handleLogout = async () => {
     setLoading(true);
 
-    const refreshToken = sessionStorage.getItem("refresh_token");
+    // const refreshToken = sessionStorage.getItem("refresh_token");
 
-    if (!refreshToken) {
-      clearSession();
-      router.push("/sign-in");
-      return;
-    }
+    // if (!refreshToken) {
+    //   clearSession();
+    //   router.push("/sign-in");
+    //   return;
+    // }
 
     try {
       const response = await fetch("/api/auth/logout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refresh_token: refreshToken }),
+        credentials: "include",
+        // headers: { "Content-Type": "application/json" },
+        // body: JSON.stringify({ refresh_token: refreshToken }),
       });
 
       if (!response.ok) {
@@ -32,22 +33,22 @@ const LogoutButton = ({ className }: { className?: string }) => {
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
-      clearSession();
+      // clearSession();
       router.push("/sign-in");
       setLoading(false);
     }
   };
 
-  const clearSession = () => {
-    sessionStorage.removeItem("access_token");
-    sessionStorage.removeItem("refresh_token");
-    sessionStorage.removeItem("user");
-  };
+  // const clearSession = () => {
+  //   sessionStorage.removeItem("access_token");
+  //   sessionStorage.removeItem("refresh_token");
+  //   sessionStorage.removeItem("user");
+  // };
 
   return (
     <button
       onClick={handleLogout}
-       className="flex-1 py-6 lg:py-0  rounded-md bg-red-500 hover:bg-red-600"
+      className="flex-1 py-6 lg:py-0  rounded-md bg-red-500 hover:bg-red-600"
       disabled={loading}
     >
       {loading ? "Logging out..." : "Logout"}

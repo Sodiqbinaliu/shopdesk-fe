@@ -11,6 +11,7 @@ import { useStore } from "@/store/useStore";
 import { getDateStartRange } from "@/utils";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useDispatch, useSelector } from "react-redux";
+import { TableMeta } from "./data-table";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 import type { Stock } from "./data/schema";
@@ -50,14 +51,18 @@ export const columns: ColumnDef<Stock>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="ITEM NAME" />
     ),
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
       const value = row.getValue<string>("name");
+      const updateSelectedRow = (
+        table.options.meta as TableMeta<typeof row.original>
+      )?.updateSelectedRow;
       return (
         <EditableCell
           value={value}
           accessorKey="name"
           stockId={row.original.id}
           rowData={row.original}
+          updateSelectedRow={updateSelectedRow}
           onChange={(val) => {
             row.original.name = val;
           }}
@@ -70,9 +75,11 @@ export const columns: ColumnDef<Stock>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="SELL PRICE" />
     ),
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
       const value = row.getValue<string>("buying_price");
-
+      const updateSelectedRow = (
+        table.options.meta as TableMeta<typeof row.original>
+      )?.updateSelectedRow;
       return (
         <EditableCell
           value={value}
@@ -80,6 +87,7 @@ export const columns: ColumnDef<Stock>[] = [
           currency={row.original.currency_code}
           stockId={row.original.id}
           rowData={row.original}
+          updateSelectedRow={updateSelectedRow}
           onChange={(val) => {
             row.original.buying_price = Number(val);
           }}
@@ -93,15 +101,18 @@ export const columns: ColumnDef<Stock>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="AVAILABLE" />
     ),
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
       const value = row.original.quantity;
-
+      const updateSelectedRow = (
+        table.options.meta as TableMeta<typeof row.original>
+      )?.updateSelectedRow;
       return (
         <EditableCell
           value={String(value) || "0"}
           accessorKey="quantity"
           stockId={row.original.id}
           rowData={row.original}
+          updateSelectedRow={updateSelectedRow}
           onChange={(val) => {
             row.original.quantity = Number(val);
           }}

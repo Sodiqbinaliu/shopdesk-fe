@@ -15,6 +15,7 @@ type EditableCellProps = {
   stockId: string;
   accessorKey: string;
   rowData: Record<string, any>;
+  updateSelectedRow: (data: any) => void;
 };
 
 export function EditableCell({
@@ -24,6 +25,7 @@ export function EditableCell({
   stockId,
   accessorKey,
   rowData,
+  updateSelectedRow,
 }: EditableCellProps) {
   const [editing, setEditing] = useState(false);
   const [internalValue, setInternalValue] = useState<string>(value);
@@ -44,7 +46,7 @@ export function EditableCell({
     if (internalValue !== value) {
       startTransition(async () => {
         try {
-          await editStock({
+          const response = await editStock({
             id: stockId,
             organization_id: organization_id,
             name: accessorKey === "name" ? internalValue : rowData.name,
@@ -57,15 +59,24 @@ export function EditableCell({
                 ? parseFloat(internalValue)
                 : rowData.buying_price,
             currency_code: currency || rowData.currency_code,
-          })
-            .unwrap()
-            .then(() => toast.success("Stock updated successfully"));
+          }).unwrap();
 
-          console.log("Stock updated successfully");
+          // Update the selected row in sidebar
+          updateSelectedRow({
+            id: stockId,
+            [accessorKey]:
+              accessorKey === "quantity"
+                ? parseInt(internalValue)
+                : accessorKey === "buying_price"
+                ? parseFloat(internalValue)
+                : internalValue,
+          });
+
+          toast.success("Stock updated successfully");
         } catch (err) {
           console.error("Error updating stock:", err);
           toast.error("Stock not updated! Please try again.");
-          setInternalValue(value); // Revert on failure
+          setInternalValue(value);
         }
       });
     }
