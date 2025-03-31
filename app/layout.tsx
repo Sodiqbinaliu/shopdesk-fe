@@ -1,3 +1,4 @@
+import AuthProvider from "@/components/providers/AuthProvider";
 import ReduxProvider from "@/components/providers/ReduxProvider";
 import { Toaster } from "@/components/ui/sonner";
 // import { Toaster } from '@/components/ui/sonner';
@@ -80,8 +81,10 @@ export default function RootLayout({
     <html lang="en">
       <ReduxProvider>
         <body>
-          <Toaster />
-          {children}
+          <AuthProvider>
+            <Toaster />
+            {children}
+          </AuthProvider>
         </body>
       </ReduxProvider>
     </html>
