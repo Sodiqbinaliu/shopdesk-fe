@@ -1,86 +1,71 @@
-'use client';
+"use client";
 
-import { useStorage } from '@/lib/helpers/manage-store';
-import { useEffect, useState, useCallback } from 'react';
+import { useStorage } from "@/lib/helpers/manage-store";
+import { useCallback, useEffect, useRef } from "react";
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { getAccessToken, setAccessToken, removeAccessToken } = useStorage();
-  const [refreshTimeout, setRefreshTimeout] = useState<NodeJS.Timeout | null>(
-    null
-  );
-
-  // removed scheduleTokenRefresh useCallback to avoid circular dependency
+  const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchRefreshToken = useCallback(async () => {
     try {
-      const response = await fetch('/api/auth/get-refresh-token', {
-        method: 'GET',
-        credentials: 'include',
+      const response = await fetch("/api/auth/get-refresh-token", {
+        method: "GET",
+        credentials: "include",
       });
 
       if (!response.ok) {
-        throw new Error('No refresh token available');
+        throw new Error("No refresh token available");
       }
 
       const data = await response.json();
       return data.refresh_token;
     } catch (error) {
-      console.warn('Error fetching refresh token:', error);
+      console.warn("Error fetching refresh token:", error);
       return null;
     }
   }, []);
 
-  const refreshAuthToken: () => Promise<void> = useCallback(async () => {
-    if (refreshTimeout) clearTimeout(refreshTimeout);
-    const timeout = setTimeout(
-      () => {
-        refreshAuthToken();
-      },
-      55 * 60 * 1000
-    );
-    setRefreshTimeout(timeout);
-
+  const refreshAuthToken = useCallback(async () => {
     const refreshToken = await fetchRefreshToken();
-
     if (!refreshToken) return;
 
     try {
-      const response = await fetch('/api/auth/refresh-access-token', {
-        method: 'GET',
-        credentials: 'include',
+      const response = await fetch("/api/auth/refresh-access-token", {
+        method: "GET",
+        credentials: "include",
       });
 
-      if (!response.ok) throw new Error('Failed to refresh token');
+      if (!response.ok) throw new Error("Failed to refresh token");
 
       const data = await response.json();
-      console.log('New access token:', data.access_token);
-
       setAccessToken(data.access_token, { expires: 1 });
+
+      // Schedule the next refresh after successful token update
+      scheduleTokenRefresh();
     } catch (error) {
-      console.error('Auth refresh failed:', error);
+      console.error("Auth refresh failed:", error);
       removeAccessToken();
     }
-  }, [fetchRefreshToken, setAccessToken, removeAccessToken, refreshTimeout]);
+  }, [fetchRefreshToken, setAccessToken, removeAccessToken]);
+
+  const scheduleTokenRefresh = useCallback(() => {
+    if (refreshTimeoutRef.current) clearTimeout(refreshTimeoutRef.current);
+    refreshTimeoutRef.current = setTimeout(refreshAuthToken, 55 * 60 * 1000);
+  }, [refreshAuthToken]);
 
   useEffect(() => {
     const accessToken = getAccessToken();
-
     if (!accessToken) {
       refreshAuthToken();
     } else {
-      const timeout = setTimeout(
-        () => {
-          refreshAuthToken();
-        },
-        55 * 60 * 1000
-      );
-      setRefreshTimeout(timeout);
+      scheduleTokenRefresh();
     }
 
     return () => {
-      if (refreshTimeout) clearTimeout(refreshTimeout);
+      if (refreshTimeoutRef.current) clearTimeout(refreshTimeoutRef.current);
     };
-  }, [getAccessToken, refreshAuthToken, refreshTimeout]);
+  }, [getAccessToken, refreshAuthToken, scheduleTokenRefresh]);
 
   return <>{children}</>;
 };
