@@ -13,7 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
+// import { ChevronDown } from "lucide-react";
 
 type PaginationProps = {
   totalItems: number;
@@ -34,9 +34,9 @@ const PaginationFeature = ({
 }: PaginationProps) => {
   const itemsPerPageOptions = [5, 10, 15, 25, 50];
 
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
-  const displayedItemsCount = endIndex - startIndex;
+  // const startIndex = (currentPage - 1) * itemsPerPage;
+  // const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+  // const displayedItemsCount = endIndex - startIndex;
 
   const handlePageClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
@@ -168,7 +168,7 @@ const PaginationFeature = ({
               {currentPage < totalPages && (
                 <PaginationItem>
                   <PaginationNext
-                    pageNum={currentPage}
+                    // pageNum={currentPage}
                     onClick={(e) => handlePageClick(e, currentPage + 1)}
                   />
                 </PaginationItem>

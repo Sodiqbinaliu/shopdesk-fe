@@ -6,6 +6,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
@@ -103,7 +104,7 @@ export default function TestimonialCarousel() {
               </p>
               
               <div className="w-16 h-16 rounded-full overflow-hidden" data-aos="zoom-in" data-aos-delay="400">
-                <img
+                <Image
                   src={testimonial.avatar}
                   alt={testimonial.name}
                   className="w-full h-full object-cover"

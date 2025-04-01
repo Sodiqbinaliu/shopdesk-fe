@@ -42,56 +42,6 @@ const StockPreference = () => {
   }) => {
     const [isOpen, setIsOpen] = useState(false);
     const selectedLabel = options.find(opt => opt.value === value)?.label || '';
-  const CustomDropdown = ({
-    options,
-    value,
-    onChange,
-    selectWidth = '352px'
-  }: {
-    options: { label: string; value: string }[];
-    value: string;
-    onChange: (value: string) => void;
-    selectWidth?: string;
-  }) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const selectedLabel = options.find(opt => opt.value === value)?.label || '';
-
-    return (
-      <div className="relative w-full sm:w-[352px]" style={{ maxWidth: selectWidth }}>
-        <div
-          className="w-full h-[62px] border border-[#e9eaeb] rounded-[12px] p-2 font-circular-light text-[#535862] text-base leading-5 font-[400] bg-white cursor-pointer flex items-center justify-between"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          <span>{selectedLabel}</span>
-          <svg
-            className={`w-5 h-5 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
-        {isOpen && (
-          <div className="absolute right-0 w-[239px] bg-white border border-[#e9eaeb] rounded-[12px] mt-1 z-10 overflow-hidden">
-            {options.map((option) => (
-              <div
-                key={option.value}
-                className={`w-[239px] h-[52px] px-4 py-4 border-b border-[#e9eaeb] last:border-b-0 font-circular-light text-[#535862] text-base leading-5 font-[400] cursor-pointer hover:bg-[#E9EEF3] ${value === option.value ? 'bg-[#E9EEF3]' : ''
-                  }`}
-                onClick={() => {
-                  onChange(option.value);
-                  setIsOpen(false);
-                }}
-              >
-                {option.label}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
     return (
       <div className="relative w-full sm:w-[352px]" style={{ maxWidth: selectWidth }}>
         <div

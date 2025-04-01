@@ -168,7 +168,7 @@ const CreateOrganization = () => {
     state.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const [createOrg, { isLoading: isSignupLoading }] = useCreateOrgMutation();
+const [createOrg] = useCreateOrgMutation();
 
   const handleCurrencySelect = useCallback((currency: Currency) => {
     setFormData((prev) => ({
@@ -226,7 +226,7 @@ const CreateOrganization = () => {
   });
 
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+const [loading] = useState(false);
   const [touched, setTouched] = useState({
     orgName: false,
     businessType: false,

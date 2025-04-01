@@ -1,6 +1,6 @@
 "use client"
 
-import { Metadata } from "next";
+// import { Metadata } from "next";
 import Pricing from "./_components/Pricing";
 import AOS from "aos";
 import "aos/dist/aos.css";

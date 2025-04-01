@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { FaTimes, FaMinus, FaPlus } from "react-icons/fa";
+import { FaTimes } from "react-icons/fa";
 import { useState, useEffect } from "react";
 
 interface CompleteSaleProps {
@@ -8,72 +8,44 @@ interface CompleteSaleProps {
 }
 
 export default function CompleteSale({ isOpen, onClose }: CompleteSaleProps) {
-  if (!isOpen) return null;
-
-  const [customerInfoSelected, setCustomerInfoSelected] = useState<
-    string | null
-  >(null);
   const [sendMethod, setSendMethod] = useState<
     "sms" | "email" | "whatsapp" | null
   >(null);
   const [customerName, setCustomerName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [emailAddress, setEmailAddress] = useState("");
-  const [customerPhone, setCustomerPhone] = useState("");
-  const [customerEmail, setCustomerEmail] = useState("");
   const [isFormValid, setIsFormValid] = useState(false);
 
-  // Validate form whenever relevant fields change
   useEffect(() => {
-    // At minimum, we need an email or phone number
     const hasContactInfo =
       emailAddress.trim() !== "" || phoneNumber.trim() !== "";
     setIsFormValid(hasContactInfo);
   }, [
     emailAddress,
     phoneNumber,
-    customerEmail,
-    customerPhone,
-    sendMethod,
     customerName,
+    sendMethod,
   ]);
 
-  const handleCustomerInfoChange = (value: string) => {
-    setCustomerInfoSelected(value);
-  };
+  if (!isOpen) return null;
 
   const handleSendMethodChange = (method: "sms" | "email" | "whatsapp") => {
     setSendMethod(method === sendMethod ? null : method);
   };
 
-  //   const handlePrintReceipt = () => {
-  //     // Print receipt logic would go here
-  //     // For now, we'll just simulate it
-  //     console.log("Printing receipt...");
-  //   };
-
   const handleEndSale = (e: React.FormEvent) => {
     e.preventDefault();
-    // Save all form data if needed
     console.log("Saving sale data...", {
       customerName,
       emailAddress,
       phoneNumber,
-      customerEmail,
-      customerPhone,
       sendMethod,
     });
-    // Close the modal
     onClose();
   };
 
   const handleSaveCustomerInfo = () => {
     // Logic to save customer info would go here
-    // console.log("Saving customer info...", {
-    //   name: customerName,
-    //   email: emailAddress,
-    //   phone: phoneNumber,
-    // });
   };
 
   return (
@@ -92,11 +64,11 @@ export default function CompleteSale({ isOpen, onClose }: CompleteSaleProps) {
               <div className=" flex gap-3">
                 {/* Receipt details will go here */}
                 <span className="text-lg text-[#888888]">Order #001</span>
-                <img src="/modal-images/line.svg" alt="" className="" />
+                <Image src="/modal-images/line.svg" alt="divider" width={16} height={16} />
                 <span className="text-lg text-[#888888]">19 Nov 2024</span>
               </div>
 
-              <img src="/modal-images/divider.svg" alt="" className="mt-2.5" />
+              <Image src="/modal-images/divider.svg" alt="divider" width={16} height={16} className="mt-2.5" />
 
               <h2 className="font-circular-medium text-xl mb-2 mt-2.5 uppercase leading-7">
                 ITEM
@@ -116,7 +88,7 @@ export default function CompleteSale({ isOpen, onClose }: CompleteSaleProps) {
                 </div>
               </div>
 
-              <img src="/modal-images/divider.svg" alt="" className="mt-2.5" />
+              <Image src="/modal-images/divider.svg" alt="divider" width={16} height={16} className="mt-2.5" />
 
               <div className="flex flex-col items-center justify-center text-[#888888] mt-56 gap-1">
                 <p className="text-lg leading-7 uppercase">
@@ -125,10 +97,12 @@ export default function CompleteSale({ isOpen, onClose }: CompleteSaleProps) {
                 <p className="text-lg">12:00</p>
               </div>
 
-              <img
+              <Image
                 src="/modal-images/border.svg"
-                alt=""
+                alt="border"
                 className="absolute -bottom-1 left-0 w-full rounded-bl-2xl rounded-br-2xl"
+                width={16}
+                height={16}
               />
             </div>
           </div>
@@ -171,18 +145,19 @@ export default function CompleteSale({ isOpen, onClose }: CompleteSaleProps) {
 
             <div className="px-6 mb-4">
               <button
-                // onClick={handlePrintReceipt}
                 className="w-full bg-[#1B1B1B] text-white py-3 rounded-lg flex items-center cursor-pointer justify-center gap-2"
               >
-                <img src="/modal-images/print.svg" alt="Print Receipt" />
+                <Image src="/modal-images/print.svg" alt="Print Receipt" width={16} height={16} />
                 Print Receipt
               </button>
             </div>
 
-            <img
+            <Image
               src="/modal-images/divider2.svg"
-              alt=""
+              alt="divider"
               className="w-full px-6"
+              width={16}
+              height={16}
             />
 
             {/* Sale completion content - Make this section scrollable */}
@@ -225,10 +200,12 @@ export default function CompleteSale({ isOpen, onClose }: CompleteSaleProps) {
                 />
               </div>
 
-              <img
+              <Image
                 src="/modal-images/divider2.svg"
-                alt=""
+                alt="divider"
                 className="w-full mt-4"
+                width={16}
+                height={16}
               />
 
               <div className="flex flex-col gap-5 mt-4">
@@ -301,10 +278,12 @@ export default function CompleteSale({ isOpen, onClose }: CompleteSaleProps) {
                 </label>
               </div>
 
-              <img
+              <Image
                 src="/modal-images/divider2.svg"
-                alt=""
+                alt="divider"
                 className="w-full mt-4"
+                width={16}
+                height={16}
               />
 
               <div className="flex flex-col sm:flex-row items-center gap-4 w-full mt-6">
@@ -356,7 +335,7 @@ export default function CompleteSale({ isOpen, onClose }: CompleteSaleProps) {
   disabled={sendMethod === null}
   onClick={handleSendReceipt}
 >
-  <img src="/modal-images/send.svg" alt="Print Receipt" />
+  <Image src="/modal-images/send.svg" alt="Send Receipt" width={16} height={16} />
   Send Receipt
 </button>
 </div> */

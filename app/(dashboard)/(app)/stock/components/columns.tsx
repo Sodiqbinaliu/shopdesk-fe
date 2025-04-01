@@ -13,11 +13,119 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { useDispatch, useSelector } from "react-redux";
 import { TableMeta } from "./data-table";
 import { DataTableColumnHeader } from "./data-table-column-header";
-import { DataTableRowActions } from "./data-table-row-actions";
+// import { DataTableRowActions } from "./data-table-row-actions";
 import type { Stock } from "./data/schema";
 import { EditableCell } from "./editable-cell";
 import { ProfitColumnHeader } from "./profit-column/profit-column-header";
 import { SalesColumnHeader } from "./sales-column/sales-column-header";
+
+const SalesHeader = ({ table }: { table: any }) => {
+  const dispatch: AppDispatch = useDispatch();
+  const isSalesExpanded = useSelector(
+    (state: RootState) => state.toggleTableState.isSalesExpanded
+  );
+
+  return (
+    <SalesColumnHeader
+      table={table}
+      isExpanded={isSalesExpanded}
+      toggleExpand={() => dispatch(toggleSalesExpand())}
+    />
+  );
+};
+
+const SalesCell = ({ row }: { row: any }) => {
+  const isExpanded = useSelector(
+    (state: RootState) => state.toggleTableState.isSalesExpanded
+  );
+
+  const { organizationId } = useStore();
+  const dateRangeStart = getDateStartRange();
+  const { data: salesData, isLoading } = useGetWeeklySalesQuery({
+    organization_id: organizationId,
+    product_ids: [row.original.id],
+    date_range_start: dateRangeStart,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center">
+        <Icons.LoadingIcon />
+      </div>
+    );
+  }
+
+  const productSales = salesData?.find(
+    (item) => item.product_id === row.original.id
+  )?.sales;
+
+  if (!isExpanded) {
+    const totalSales = productSales
+      ? ["monday", "tuesday", "wednesday", "thursday", "friday"].reduce(
+          (acc, day) => acc + (productSales[day] ?? 0),
+          0
+        )
+      : 0;
+
+    return (
+      <div className="flex items-center justify-center">{totalSales}</div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-5 w-full">
+      {["monday", "tuesday", "wednesday", "thursday", "friday"].map((day) => (
+        <div
+          key={day}
+          className="border-r p-5 last:border-r-0 rounded-none text-sm w-full h-full text-center"
+        >
+          {productSales ? productSales[day] ?? 0 : 0}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const ProfitHeader = ({ table }: { table: any }) => {
+  const dispatch: AppDispatch = useDispatch();
+  const isProfitExpanded = useSelector(
+    (state: RootState) => state.toggleTableState.isProfitExpanded
+  );
+
+  const toggleExpand = () => {
+    dispatch(toggleProfitExpand());
+    table.reset();
+  };
+
+  return (
+    <ProfitColumnHeader
+      table={table}
+      isExpanded={isProfitExpanded}
+      toggleExpand={toggleExpand}
+    />
+  );
+};
+
+const ProfitCell = () => {
+  const isExpanded = useSelector(
+    (state: RootState) => state.toggleTableState.isProfitExpanded
+  );
+
+  if (!isExpanded) {
+    return <div className="flex items-center justify-center">{0}</div>;
+  }
+
+  return (
+    <div className="grid grid-cols-2">
+      <div className="p-5 border-r border-solid border-gray-200 rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative text-center">
+        {0}
+      </div>
+      <div className="border-none p-5 rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative text-center">
+        {0}
+      </div>
+    </div>
+  );
+};
 
 export const columns: ColumnDef<Stock>[] = [
   // {
@@ -63,9 +171,7 @@ export const columns: ColumnDef<Stock>[] = [
           stockId={row.original.id}
           rowData={row.original}
           updateSelectedRow={updateSelectedRow}
-          onChange={(val) => {
-            row.original.name = val;
-          }}
+          // Removed onChange as it's not part of EditableCellProps
         />
       );
     },
@@ -88,9 +194,9 @@ export const columns: ColumnDef<Stock>[] = [
           stockId={row.original.id}
           rowData={row.original}
           updateSelectedRow={updateSelectedRow}
-          onChange={(val) => {
-            row.original.buying_price = Number(val);
-          }}
+          // onChange={(val) => {
+          //   row.original.buying_price = Number(val);
+          // }}
         />
       );
     },
@@ -113,9 +219,9 @@ export const columns: ColumnDef<Stock>[] = [
           stockId={row.original.id}
           rowData={row.original}
           updateSelectedRow={updateSelectedRow}
-          onChange={(val) => {
-            row.original.quantity = Number(val);
-          }}
+          // onChange={(val) => {
+          //   row.original.quantity = Number(val);
+          // }}
         />
       );
     },
@@ -123,123 +229,19 @@ export const columns: ColumnDef<Stock>[] = [
   },
   {
     accessorKey: "sales",
-    header: ({ table }) => {
-      const dispatch: AppDispatch = useDispatch();
-      const isSalesExpanded = useSelector(
-        (state: RootState) => state.toggleTableState.isSalesExpanded
-      );
-      return (
-        <SalesColumnHeader
-          table={table}
-          isExpanded={isSalesExpanded}
-          toggleExpand={() => dispatch(toggleSalesExpand())}
-        />
-      );
-    },
-    cell: ({ row, table }) => {
-      const isExpanded = useSelector(
-        (state: RootState) => state.toggleTableState.isSalesExpanded
-      );
-
-      const { organizationId } = useStore();
-      const dateRangeStart = getDateStartRange();
-      const { data: salesData, isLoading } = useGetWeeklySalesQuery({
-        organization_id: organizationId,
-        product_ids: [row.original.id],
-        date_range_start: dateRangeStart,
-      });
-
-      if (isLoading) {
-        return (
-          <div className="flex items-center justify-center">
-            <Icons.LoadingIcon />
-          </div>
-        );
-      }
-
-      if (!isExpanded) {
-        const productSales = salesData?.find(
-          (item) => item.product_id === row.original.id
-        )?.sales;
-
-        const totalSales = productSales
-          ? ["monday", "tuesday", "wednesday", "thursday", "friday"].reduce(
-              (acc, day) => acc + (productSales[day] ?? 0),
-              0
-            )
-          : 0;
-
-        return (
-          <div className="flex items-center justify-center">{totalSales}</div>
-        );
-      }
-
-      const productSales = salesData?.find(
-        (item) => item.product_id === row.original.id
-      )?.sales;
-
-      return (
-        <div className="grid grid-cols-5 w-full">
-          {["monday", "tuesday", "wednesday", "thursday", "friday"].map(
-            (day) => (
-              <div
-                key={day}
-                className="border-r p-5 last:border-r-0 rounded-none text-sm w-full h-full text-center"
-              >
-                {productSales ? productSales[day] ?? 0 : 0}
-              </div>
-            )
-          )}
-        </div>
-      );
-    },
+    header: SalesHeader,
+    cell: SalesCell,
     enableSorting: true,
   },
   {
     accessorKey: "profitGroup",
-    header: ({ table }) => {
-      const dispatch: AppDispatch = useDispatch();
-      const isProfitExpanded = useSelector(
-        (state: RootState) => state.toggleTableState.isProfitExpanded
-      );
-
-      const toggleExpand = () => {
-        dispatch(toggleProfitExpand());
-
-        table.reset();
-      };
-      return (
-        <ProfitColumnHeader
-          table={table}
-          isExpanded={isProfitExpanded}
-          toggleExpand={toggleExpand}
-        />
-      );
-    },
-    cell: ({ row, table }) => {
-      const isExpanded = useSelector(
-        (state: RootState) => state.toggleTableState.isProfitExpanded
-      );
-      if (!isExpanded) {
-        return <div className="flex items-center justify-center">{0}</div>;
-      }
-
-      return (
-        <div className="grid grid-cols-2">
-          <div className="p-5 border-r border-solid border-gray-200   rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative text-center">
-            {0}
-          </div>
-          <div className="border-none p-5  rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative text-center">
-            {0}
-          </div>
-        </div>
-      );
-    },
+    header: ProfitHeader,
+    cell: ProfitCell,
     enableSorting: true,
   },
   {
     id: "actions",
-    header: ({ column }) => {
+    header: () => {
       return (
         <div
           className="h-full py-5 px-4 flex items-center justify-center bg-transparent hover:bg-black/10 transition-all duration-150 shadow-none cursor-pointer"
@@ -251,6 +253,6 @@ export const columns: ColumnDef<Stock>[] = [
         </div>
       );
     },
-    cell: ({ row }) => <DataTableRowActions row={row} />,
+    // cell: ({ row }) => <DataTableRowActions row={row} />,
   },
 ];

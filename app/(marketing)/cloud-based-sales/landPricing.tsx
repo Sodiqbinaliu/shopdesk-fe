@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 // import { Features } from "@/components/shared/features";
 import Link from "next/link";
 
@@ -130,8 +131,9 @@ const Pricing = () => {
                           className="rounded-[4px] bg-[#009A49] flex items-center justify- border-[1.4px] border-white h-[18px] 
                         w-[18px] mt-0.5"
                         >
-                          <img
+                          <Image
                             src="/pricing/tick.svg"
+                            alt=""
                             aria-hidden="true"
                             className="h-4 w-4"
                           />

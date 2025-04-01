@@ -1,7 +1,7 @@
 "use client";
 import SalesModal from "@/components/modal/salesmodal/sales-modal";
 import { Button } from "@/components/ui/button";
-import { Icons } from "@/components/ui/icons";
+// import { Icons } from "@/components/ui/icons";
 import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   useCreateCustomerMutation,
@@ -32,9 +32,6 @@ import EmptySalePage from "./components/empty-sale-page";
 import { processDataIntoGroups } from "./data/data";
 
 export default function SalesPage() {
-  // const [groupedData, setGroupedData] = useState<
-  //   { timeKey: string; items: Sale[]; total: Sale }[]
-  // >([]);
   const [viewType, setViewType] = React.useState<"Daily" | "Weekly" | "Flat">(
     "Daily"
   );
@@ -47,7 +44,7 @@ export default function SalesPage() {
 
   // Create a table instance for pagination
 
-  const { data: salesData, isFetching: FetchingSalesData } = useGetSalesQuery(
+  const { data: salesData } = useGetSalesQuery(
     {
       organization_id: organizationId,
     },
@@ -72,7 +69,7 @@ export default function SalesPage() {
     })
   );
 
-  const { data: ProductsData, isFetching } = useGetProductsForSaleQuery(
+  const { data: ProductsData } = useGetProductsForSaleQuery(
     {
       organization_id: organizationId,
     },
@@ -80,7 +77,7 @@ export default function SalesPage() {
       refetchOnMountOrArgChange: true,
     }
   );
-  const { data: customersData, isFetching: isFetchingCustomers } =
+  const { data: customersData } =
     useGetCustomersQuery(
       {
         organization_id: organizationId,
@@ -171,16 +168,16 @@ export default function SalesPage() {
     }
   };
 
+  const pagination = table.getState().pagination;
   const groupedData = React.useMemo(() => {
     if (!formattedSales) return [];
 
-    // Get current page data
-    const { pageSize, pageIndex } = table.getState().pagination;
+    const { pageSize, pageIndex } = pagination;
     const start = pageIndex * pageSize;
     const paginatedData = formattedSales.slice(start, start + pageSize);
 
     return processDataIntoGroups(paginatedData);
-  }, [formattedSales, table.getState().pagination]);
+  }, [formattedSales, pagination]);
 
   return (
     <React.Fragment>
@@ -224,14 +221,8 @@ export default function SalesPage() {
             </Table>
           </div>
 
-          {groupedData.length === 0 && !FetchingSalesData && (
+          {groupedData.length === 0 && (
             <EmptySalePage toggleSalesModal={toggleSalesModal} />
-          )}
-
-          {FetchingSalesData && (
-            <div className="text-xl text-center w-full flex justify-center gap-3 items-center mt-10">
-              <Icons.LoadingIcon /> Getting your sales. Please Wait!
-            </div>
           )}
 
           {/* Tables for each time group */}
@@ -278,9 +269,7 @@ export default function SalesPage() {
         onCompleteSale={completeSale}
         isCreatingSale={isCreatingSale}
         isCreatingCustomer={isCreatingCustomer}
-        isFetchingCustomers={isFetchingCustomers}
-        stockItems={stockItems as unknown as StockItemResponse[]}
-      />
+        stockItems={stockItems as unknown as StockItemResponse[]} isFetchingCustomers={false}/>
     </React.Fragment>
   );
 }

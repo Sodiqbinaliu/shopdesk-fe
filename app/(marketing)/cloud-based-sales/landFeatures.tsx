@@ -1,4 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
+
 
 interface FeaturesProps {
   text: string;
@@ -97,7 +99,7 @@ const Features = ({ text }: FeaturesProps) => {
                   data-aos-delay={`${index * 100 + 100}`}
                   data-aos-once="false"
                 >
-                  <img
+                  <Image
                     src={content.imageSource}
                     alt="icon"
                     className="h-[24px] w-[24px]"

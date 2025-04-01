@@ -119,7 +119,7 @@ const Page = () => {
         </div>
       </section>
 
-      <section className="flex items-center justify-center bg-[#19A45B] h-[185px] mb-[96px] hidden">
+      <section className="lg:flex items-center justify-center bg-[#19A45B] h-[185px] mb-[96px] hidden">
         <div className="flex flex-wrap md:flex-nowrap justify-center md:justify-between gap-2 px-2 md:gap-6 md:px-6 lg:gap-8 lg:px-8 items-center">
           <div className={countDownBlockClass}>
             <p className={countDownNumberClass}>24</p>
@@ -245,7 +245,7 @@ const Page = () => {
                   Exclusive Early Access
                 </p>
                 <p className="text-base text-[#717171] ">
-                   Try Shopdesk before anyone else.
+                  Try Shopdesk before anyone else.
                 </p>
               </div>
             </div>
@@ -261,7 +261,7 @@ const Page = () => {
                   Exclusive Early Access
                 </p>
                 <p className="text-base text-[#717171] ">
-                   Try Shopdesk before anyone else.
+                  Try Shopdesk before anyone else.
                 </p>
               </div>
             </div>
@@ -275,7 +275,7 @@ const Page = () => {
         </div>
       </section>
 
-      <section className="bg-[#E5F5ED] flex flex-col items-center gap-[40px] py-8 mt-8 hidden">
+      <section className="bg-[#E5F5ED] lg:flex flex-col items-center gap-[40px] py-8 mt-8 hidden">
         <div className="w-[min(90%,1212px)] flex justify-between items-center ">
           <button className="size-[48px] p-[15px] rounded-[12px] border-[1px] border-[#C7D3E1] bg-white flex justify-center items-center">
             <Image src={left} alt="left button" height={18} width={18} />
@@ -289,12 +289,12 @@ const Page = () => {
           </button>
         </div>
         <p className="text-2xl sm:text-[32px] text-center font-[450] sm:leading-[42px] text-black max-w-[50ch] px-3">
-          Shop Desk transformed how we manage our stock – it's a game changer.
+          Shop Desk transformed how we manage our stock – it&apos;s a game changer.
           Finally, a retail management solution that is intuitive and scalable.
-          I can’t wait for the full launch!
+          I can&apos;t wait for the full launch!
         </p>
         <p className="text-2xl sm:text-[32px] text-center font-[450] sm:leading-[42px] text-black max-w-[50ch] px-3">
-          — Lisa M, Small Business Owner
+          &mdash; Lisa M, Small Business Owner
         </p>
         <Image
           src={testimonial}

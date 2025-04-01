@@ -10,14 +10,14 @@ import { useState } from "react";
 // import { useStore } from "@/store/useStore";
 import SignUpSuccess from "@/components/modal/signUpSucccess";
 import { useSignupMutation } from "@/redux/features/auth/auth.api";
-import { useDispatch, UseDispatch, useSelector } from "react-redux";
+// import { useDispatch, UseDispatch, useSelector } from "react-redux";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { RootState } from "@/redux/store"; // Add this line to import RootState
+// import { RootState } from "@/redux/store"; // Add this line to import RootState
 //import { signUpUser } from "@/services/auth";
 
 const countryCodes = [
@@ -30,12 +30,12 @@ const countryCodes = [
 ];
 
 export default function SignUp() {
-  const { user, isLoading, error } = useSelector(
-    (state: RootState) => state.auth
-  );
+  // const { user, isLoading, error } = useSelector(
+  //   (state: RootState) => state.auth
+  // );
 
-  const dispatch = useDispatch();
-  const [signup, { isLoading: isSignupLoading }] = useSignupMutation();
+  // const dispatch = useDispatch();
+  const [signup] = useSignupMutation();
   const router = useRouter();
 
   const [formData, setFormData] = useState({
@@ -54,6 +54,7 @@ export default function SignUp() {
     password: "",
     phoneNumber: "",
   });
+  const [generalError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [touched, setTouched] = useState({
     firstName: false,
@@ -219,8 +220,8 @@ export default function SignUp() {
 
       router.push("/create-organization");
       setIsModalOpen(false);
-    } catch (err: any) {
-      //   setError(err.message || "Something went wrong. Please try again.");
+    // } catch (err: any) {
+    //     setError(err.message || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -600,7 +601,7 @@ export default function SignUp() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3 }}
                       >
-                        Passwords don't match.
+                        Passwords don&apos;t match.
                       </motion.p>
                     )}
                 </motion.div>
@@ -623,15 +624,15 @@ export default function SignUp() {
                       <div className="w-6 h-4 bg-white flex items-center justify-center">
                         <div className="w-5 h-3 bg-white flex items-center relative">
                           <div className="absolute inset-0 flex items-center justify-center">
-                            <img
-                              src={
-                                countryCodes.find(
-                                  (c) => c.code === formData.phoneCountryCode
-                                )?.flag
-                              }
-                              alt="Selected Country"
-                              className="h-6 w-6"
-                            />
+<Image
+  src={
+    countryCodes.find(
+      (c) => c.code === formData.phoneCountryCode
+    )?.flag || "/modal-images/nigeria-flag.svg"
+  }
+  alt="Selected Country"
+  className="h-6 w-6"
+/>
                           </div>
                         </div>
                       </div>
@@ -662,7 +663,7 @@ export default function SignUp() {
                               onClick={() => handleCountryChange(country.code)}
                             >
                               <div className="flex items-center gap-2">
-                                <img
+                                <Image
                                   src={country.flag}
                                   alt={country.name}
                                   className="h-4 w-6"
@@ -703,14 +704,14 @@ export default function SignUp() {
               </motion.div>
 
               {/* Error Message */}
-              {error && (
+              {generalError && (
                 <motion.p
                   className="text-red-600 text-center text-sm"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.3 }}
                 >
-                  {error}
+                  {generalError}
                 </motion.p>
               )}
 

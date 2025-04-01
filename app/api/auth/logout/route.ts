@@ -5,9 +5,6 @@ export async function POST() {
   try {
     const cookieStore = await cookies();
     const refresh_token = cookieStore.get("refresh_token")?.value;
-    const selected_organization = cookieStore.get(
-      "selected_organization"
-    )?.value;
 
     if (!refresh_token) {
       return NextResponse.json(

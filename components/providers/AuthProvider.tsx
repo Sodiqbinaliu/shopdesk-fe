@@ -1,7 +1,7 @@
 "use client";
 
 import { useStorage } from "@/lib/helpers/manage-store";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { getAccessToken, setAccessToken, removeAccessToken } = useStorage();
@@ -9,7 +9,9 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     null
   );
 
-  const fetchRefreshToken = async () => {
+  // removed scheduleTokenRefresh useCallback to avoid circular dependency
+
+  const fetchRefreshToken = useCallback(async () => {
     try {
       const response = await fetch("/api/auth/get-refresh-token", {
         method: "GET",
@@ -26,9 +28,15 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.warn("Error fetching refresh token:", error);
       return null;
     }
-  };
+  }, []);
 
-  const refreshAuthToken = async () => {
+  const refreshAuthToken: () => Promise<void> = useCallback(async () => {
+    if (refreshTimeout) clearTimeout(refreshTimeout);
+    const timeout = setTimeout(() => {
+      refreshAuthToken();
+    }, 55 * 60 * 1000);
+    setRefreshTimeout(timeout);
+
     const refreshToken = await fetchRefreshToken();
 
     if (!refreshToken) return;
@@ -45,20 +53,11 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.log("New access token:", data.access_token);
 
       setAccessToken(data.access_token, { expires: 1 });
-
-      scheduleTokenRefresh(55 * 60 * 1000);
     } catch (error) {
       console.error("Auth refresh failed:", error);
       removeAccessToken();
     }
-  };
-
-  const scheduleTokenRefresh = (delay: number) => {
-    if (refreshTimeout) clearTimeout(refreshTimeout);
-
-    const timeout = setTimeout(refreshAuthToken, delay);
-    setRefreshTimeout(timeout);
-  };
+  }, [fetchRefreshToken, setAccessToken, removeAccessToken, refreshTimeout]);
 
   useEffect(() => {
     const accessToken = getAccessToken();
@@ -66,13 +65,16 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (!accessToken) {
       refreshAuthToken();
     } else {
-      scheduleTokenRefresh(55 * 60 * 1000);
+      const timeout = setTimeout(() => {
+        refreshAuthToken();
+      }, 55 * 60 * 1000);
+      setRefreshTimeout(timeout);
     }
 
     return () => {
       if (refreshTimeout) clearTimeout(refreshTimeout);
     };
-  }, []);
+  }, [getAccessToken, refreshAuthToken, refreshTimeout]);
 
   return <>{children}</>;
 };

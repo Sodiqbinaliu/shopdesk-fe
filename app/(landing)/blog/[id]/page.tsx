@@ -92,14 +92,14 @@ const Page = () => {
           <p>
             As your business grows, managing orders efficiently becomes a
             challenge. Delays, miscommunication, and stock issues can lead to
-            unsatisfied customers and lost sales. That's where Shopdesk comes
+            unsatisfied customers and lost sales. That&apos;s where Shopdesk comes
             in—providing a seamless order management system that keeps your
             business running smoothly.
           </p>
           <p>
-            Whether you're handling a few orders a day or managing a high-volume
+            Whether you&apos;re handling a few orders a day or managing a high-volume
             store, a structured, automated approach can save time, reduce
-            errors, and improve customer satisfaction. Here's how Shopdesk makes
+            errors, and improve customer satisfaction. Here&apos;s how Shopdesk makes
             order management effortless.
           </p>
         </section>
@@ -202,7 +202,7 @@ const Page = () => {
           </h3>
           <p>
             Managing orders manually is time-consuming and prone to errors. With
-            Shopdesk's seamless order management system, you can streamline
+            Shopdesk&apos;s seamless order management system, you can streamline
             workflows, reduce processing time, and improve customer
             satisfaction—all from a single platform.
           </p>

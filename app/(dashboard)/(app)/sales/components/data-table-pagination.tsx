@@ -5,6 +5,7 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
+import Image from "next/image";
 import type { Table } from "@tanstack/react-table";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
@@ -19,7 +20,7 @@ export function DataTablePagination<TData>({
   viewType,
   setViewType,
 }: DataTablePaginationProps<TData>) {
-  const { pageIndex, pageSize } = table.getState().pagination;
+  const { pageIndex } = table.getState().pagination;
   const totalPages = table.getPageCount();
 
   return (
@@ -35,7 +36,7 @@ export function DataTablePagination<TData>({
             <SelectTrigger className="h-8 w-auto p-0 border-none shadow-none focus:ring-0 focus:ring-offset-0 [&>svg]:hidden">
               <span className="flex items-center ml-1 text-[#2A2A2A]">
                 {viewType === "Flat" ? "Flat / All Time" : viewType}
-                <img
+                <Image
                   src="/icons/downarrow.png"
                   alt="chevron-down"
                   className="h-2 w-2 mx-1"

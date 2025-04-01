@@ -11,7 +11,6 @@ import { toast } from "sonner";
 type EditableCellProps = {
   value: string;
   currency?: string;
-  onChange: (newValue: string) => void;
   stockId: string;
   accessorKey: string;
   rowData: Record<string, any>;
@@ -21,7 +20,6 @@ type EditableCellProps = {
 export function EditableCell({
   value,
   currency,
-  onChange,
   stockId,
   accessorKey,
   rowData,
@@ -30,10 +28,10 @@ export function EditableCell({
   const [editing, setEditing] = useState(false);
   const [internalValue, setInternalValue] = useState<string>(value);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [editStock, { isLoading, error }] = useEditStockMutation();
+  const [editStock] = useEditStockMutation();
   const organization_id = useStore((state) => state.organizationId);
 
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   useEffect(() => {
     if (editing) {
@@ -46,7 +44,7 @@ export function EditableCell({
     if (internalValue !== value) {
       startTransition(async () => {
         try {
-          const response = await editStock({
+          await editStock({
             id: stockId,
             organization_id: organization_id,
             name: accessorKey === "name" ? internalValue : rowData.name,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+// import { useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import Image from "next/image";
 

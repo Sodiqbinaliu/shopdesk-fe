@@ -15,7 +15,7 @@ const NotFoundPage: FC = () => {
         <h2 className="text-2xl font-semibold text-green-700 mt-2">Page Not Found</h2>
         
         <p className="text-gray-600 mt-4">
-          Oops! The page you are looking for doesn't seem to exist.
+          Oops! The page you are looking for doesn&apos;t seem to exist.
         </p>
         
         <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">

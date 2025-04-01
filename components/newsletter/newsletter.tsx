@@ -106,7 +106,7 @@ const Newsletter = () => {
           </div>
             <div className='flex flex-col items-center gap-2.5 justify-center text-[10px] lg:text-[16px] text-[#706F6F]'>
                 <p>Copyright ShopDesk © 2025 | Powered by Timbu Busines</p>
-                <p className='text-center'>You're receiving this email because you are a subscriber of <Link href='/' className='text-green-500 font-light'>shopdesk.im</Link>, If you feel you received it by mistake or wish to unsubscribe, <span className='text-green-500 font-black cursor-pointer'>click here</span> </p>
+                <p className='text-center'>You&apos;re receiving this email because you are a subscriber of <Link href='/' className='text-green-500 font-light'>shopdesk.im</Link>, If you feel you received it by mistake or wish to unsubscribe, <span className='text-green-500 font-black cursor-pointer'>click here</span> </p>
             </div>
         <div className="w-full flex flex-col md:flex-row items-center justify-center gap-4 text-[14px] text-[#71717A] text-center md:text-left">
           <ul className="flex flex-wrap justify-center items-center gap-4">

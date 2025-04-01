@@ -134,7 +134,7 @@ export default function ChoosePlan() {
 
         <RadioGroup defaultValue={active}>
           {plans.map((plan) => (
-            <div
+            <div key={plan.id}
               className={`
                  ${
                    active === plan.id &&
