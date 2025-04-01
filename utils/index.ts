@@ -35,13 +35,17 @@ export const formatDate = (
   const month = months[dateObj.getMonth()];
   const year = dateObj.getFullYear();
 
-  const hours = dateObj.getHours();
-  const minutes = dateObj.getMinutes();
-  const ampm = hours >= 12 ? "PM" : "AM";
-  const formattedHours = hours % 12 || 12; // Convert 0 to 12-hour format
+  // Convert to local time using UTC+2
+  const options: Intl.DateTimeFormatOptions = {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "Africa/Johannesburg", // Example for UTC+2
+  };
+  const localTime = dateObj.toLocaleTimeString("en-US", options);
 
   return {
     date: `${day} ${date} ${month} ${year}`, // Example: "Thu 27 Mar 2025"
-    time: `${formattedHours}:${minutes.toString().padStart(2, "0")} ${ampm}`, // Example: "02:19 PM"
+    time: localTime, // Example: "02:19 PM"
   };
 };

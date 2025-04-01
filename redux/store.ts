@@ -6,6 +6,7 @@ import { combineReducers } from "redux";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import authSliceReducer from "./features/auth/auth.slice";
+import cartReducer from "./features/product/product.slice";
 import weeklySalesDataReducer from "./features/sale/sale.slice";
 import { sidebarReducer } from "./features/sidebar";
 import stocksSliceReducer from "./features/stock/stock.slice";
@@ -16,8 +17,8 @@ import preferencesReducer from "./preferencesSlice";
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth", "sidebar", "sales", "notification"],
-  blacklist: ["stocks", "weeklySales", ""],
+  whitelist: ["auth", "sidebar", "sales", "notification", "cart"],
+  blacklist: ["stocks", "weeklySales"],
 };
 
 type RootAction =
@@ -33,6 +34,7 @@ const appReducer = combineReducers({
   weeklySales: weeklySalesDataReducer,
   notification: notificationsReducer,
   preferences: preferencesReducer,
+  cart: cartReducer,
   [api.reducerPath]: api.reducer,
 });
 

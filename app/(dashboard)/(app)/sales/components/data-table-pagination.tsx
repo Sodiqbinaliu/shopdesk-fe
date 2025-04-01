@@ -8,17 +8,20 @@ import {
 import Image from "next/image";
 import type { Table } from "@tanstack/react-table";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import Image from "next/image";
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
   viewType: "Daily" | "Weekly" | "Flat";
   setViewType: (type: "Daily" | "Weekly" | "Flat") => void;
+  salesCount?: number;
 }
 
 export function DataTablePagination<TData>({
   table,
   viewType,
   setViewType,
+  salesCount,
 }: DataTablePaginationProps<TData>) {
   const { pageIndex } = table.getState().pagination;
   const totalPages = table.getPageCount();
@@ -26,6 +29,9 @@ export function DataTablePagination<TData>({
   return (
     <div className="flex items-center justify-between px-2">
       <div className="flex-1 text-sm text-muted-foreground">
+        <span>
+          You have made {salesCount ?? 0} {salesCount === 1 ? "sale" : "sales"}
+        </span>
         <span className="inline-flex items-center">
           <Select
             value={viewType}
@@ -36,7 +42,7 @@ export function DataTablePagination<TData>({
             <SelectTrigger className="h-8 w-auto p-0 border-none shadow-none focus:ring-0 focus:ring-offset-0 [&>svg]:hidden">
               <span className="flex items-center ml-1 text-[#2A2A2A]">
                 {viewType === "Flat" ? "Flat / All Time" : viewType}
-                <Image
+                <img
                   src="/icons/downarrow.png"
                   alt="chevron-down"
                   className="h-2 w-2 mx-1"
