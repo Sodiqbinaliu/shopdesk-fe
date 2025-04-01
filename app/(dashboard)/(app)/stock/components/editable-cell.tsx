@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
 // import { editStock } from "@/actions/stocks";
-import { Input } from "@/components/ui/input";
-import { useEditStockMutation } from "@/redux/features/stock/stock.api";
-import { useStore } from "@/store/useStore";
+import { Input } from '@/components/ui/input';
+import { useEditStockMutation } from '@/redux/features/stock/stock.api';
+import { useStore } from '@/store/useStore';
 // import { useEditStockMutation } from "@/redux/features/stock/stock.api";
-import { useEffect, useRef, useState, useTransition } from "react";
-import { toast } from "sonner";
+import { useEffect, useRef, useState, useTransition } from 'react';
+import { toast } from 'sonner';
 
 type EditableCellProps = {
   value: string;
@@ -47,13 +47,13 @@ export function EditableCell({
           await editStock({
             id: stockId,
             organization_id: organization_id,
-            name: accessorKey === "name" ? internalValue : rowData.name,
+            name: accessorKey === 'name' ? internalValue : rowData.name,
             quantity:
-              accessorKey === "quantity"
+              accessorKey === 'quantity'
                 ? parseInt(internalValue)
                 : rowData.quantity,
             buying_price:
-              accessorKey === "buying_price"
+              accessorKey === 'buying_price'
                 ? parseFloat(internalValue)
                 : rowData.buying_price,
             currency_code: currency || rowData.currency_code,
@@ -63,17 +63,17 @@ export function EditableCell({
           updateSelectedRow({
             id: stockId,
             [accessorKey]:
-              accessorKey === "quantity"
+              accessorKey === 'quantity'
                 ? parseInt(internalValue)
-                : accessorKey === "buying_price"
-                ? parseFloat(internalValue)
-                : internalValue,
+                : accessorKey === 'buying_price'
+                  ? parseFloat(internalValue)
+                  : internalValue,
           });
 
-          toast.success("Stock updated successfully");
+          toast.success('Stock updated successfully');
         } catch (err) {
-          console.error("Error updating stock:", err);
-          toast.error("Stock not updated! Please try again.");
+          console.error('Error updating stock:', err);
+          toast.error('Stock not updated! Please try again.');
           setInternalValue(value);
         }
       });
@@ -87,28 +87,28 @@ export function EditableCell({
       onChange={(e) => setInternalValue(e.target.value)}
       onBlur={handleSave}
       onKeyDown={(e) => {
-        if (e.key === "Enter") {
+        if (e.key === 'Enter') {
           handleSave();
         }
-        if (e.key === "Escape") {
+        if (e.key === 'Escape') {
           setInternalValue(value);
           setEditing(false);
         }
       }}
-      className="border-none p-5  rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative"
+      className='border-none p-5  rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative'
     />
   ) : (
     <Input
       ref={inputRef}
       value={
         currency
-          ? `${currency ?? ""} ${internalValue?.toLocaleString() ?? ""}`
-          : `${internalValue?.toLocaleString() ?? ""}`
+          ? `${currency ?? ''} ${internalValue?.toLocaleString() ?? ''}`
+          : `${internalValue?.toLocaleString() ?? ''}`
       }
       onClick={() => setEditing(true)}
       onKeyDown={() => setEditing(true)}
       readOnly
-      className="border-none p-5  rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative"
+      className='border-none p-5  rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative'
     />
   );
 }

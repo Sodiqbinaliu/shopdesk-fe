@@ -1,14 +1,14 @@
-import Image from "next/image";
-import Link from "next/link";
-import logo from "@/public/newsletter/Logonews.svg";
+import Image from 'next/image';
+import Link from 'next/link';
+import logo from '@/public/newsletter/Logonews.svg';
 
 const Logo = () => {
   return (
-    <Link href="/" className="flex items-center gap-4">
+    <Link href='/' className='flex items-center gap-4'>
       <Image
         src={logo}
-        alt="ShopDesk logo"
-        className=""
+        alt='ShopDesk logo'
+        className=''
         width={173}
         height={30}
         quality={90}

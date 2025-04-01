@@ -22,8 +22,8 @@ const Hero = () => {
             </span>
           </h2>
           <p className='text-center font-[300] text-[18px] md:text-[24px] leading-[100%] text-[#5F5F5F]'>
-            Managing inventory and tracking stock records doesn&apos;t have to be
-            difficult. Shopdesk gives e-commerce entrepreneurs a simple yet
+            Managing inventory and tracking stock records doesn&apos;t have to
+            be difficult. Shopdesk gives e-commerce entrepreneurs a simple yet
             powerful inventory management tool to track, update, and organize
             stock records with ease.
           </p>

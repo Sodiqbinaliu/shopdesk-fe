@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import Logo from "@/components/functional/logo";
-import Cube from "@/public/auth/cube.svg";
-import Illustration from "@/public/auth/illustration.svg";
-import { authenticationSuccess } from "@/redux/features/auth/auth.slice";
+import Logo from '@/components/functional/logo';
+import Cube from '@/public/auth/cube.svg';
+import Illustration from '@/public/auth/illustration.svg';
+import { authenticationSuccess } from '@/redux/features/auth/auth.slice';
 // import { useStore } from "@/store/useStore";
-import { motion } from "framer-motion";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
-import { useDispatch } from "react-redux";
-import { AuthFooter } from "./footer";
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { AuthFooter } from './footer';
 export default function SignIn() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -22,8 +22,8 @@ export default function SignIn() {
 
 function SignInContent() {
   const dispatch = useDispatch();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [touched, setTouched] = useState({ email: false, password: false });
@@ -31,10 +31,10 @@ function SignInContent() {
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectToParam = searchParams.get("redirectTo");
+  const redirectToParam = searchParams.get('redirectTo');
   const redirectTo = redirectToParam
-    ? decodeURIComponent(redirectToParam.split("?")[0]) // Get only the first valid path
-    : "/select-organization";
+    ? decodeURIComponent(redirectToParam.split('?')[0]) // Get only the first valid path
+    : '/select-organization';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,34 +42,34 @@ function SignInContent() {
     setTouched({ email: true, password: true });
 
     if (!email.trim() || !password.trim()) {
-      setError("Please fill in all required fields.");
+      setError('Please fill in all required fields.');
       return;
     }
 
     setLoading(true);
 
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
 
-      console.log("data from login:", data);
+      console.log('data from login:', data);
 
       if (!response.ok) {
-        throw new Error(data?.message || "Invalid email or password.");
+        throw new Error(data?.message || 'Invalid email or password.');
       }
 
       dispatch(authenticationSuccess(data));
 
       router.push(redirectTo);
     } catch (err: any) {
-      setError(err.message || "Something went wrong. Please try again.");
+      setError(err.message || 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -91,7 +91,7 @@ function SignInContent() {
     visible: {
       y: 0,
       opacity: 1,
-      transition: { type: "spring", stiffness: 100 },
+      transition: { type: 'spring', stiffness: 100 },
     },
   };
 
@@ -100,7 +100,7 @@ function SignInContent() {
     visible: {
       scale: 1,
       opacity: 1,
-      transition: { type: "spring", stiffness: 100, delay: 0.2 },
+      transition: { type: 'spring', stiffness: 100, delay: 0.2 },
     },
   };
 
@@ -109,7 +109,7 @@ function SignInContent() {
     visible: {
       opacity: 1,
       x: 0,
-      transition: { type: "spring", stiffness: 100, delay: 0.3 },
+      transition: { type: 'spring', stiffness: 100, delay: 0.3 },
     },
   };
 
@@ -125,33 +125,33 @@ function SignInContent() {
   };
 
   return (
-    <div className="flex flex-col h-dvh w-full bg-white md:bg-[url(/auth/bg-pattern.svg)] bg-contain bg-no-repeat bg-right px-8 md:px-16">
+    <div className='flex flex-col h-dvh w-full bg-white md:bg-[url(/auth/bg-pattern.svg)] bg-contain bg-no-repeat bg-right px-8 md:px-16'>
       <motion.div
-        className="border-b border-[#F2F4F7] flex lg:hidden justify-center h-20"
-        initial="hidden"
-        animate="visible"
+        className='border-b border-[#F2F4F7] flex lg:hidden justify-center h-20'
+        initial='hidden'
+        animate='visible'
         variants={fadeIn}
       >
         <Logo />
       </motion.div>
 
-      <main className="size-full flex justify-center lg:justify-between items-center">
+      <main className='size-full flex justify-center lg:justify-between items-center'>
         {/* left */}
 
         <motion.div
-          className="hidden lg:flex flex-col gap-8 justify-center items-center max-w-[278px]"
-          initial="hidden"
-          animate="visible"
+          className='hidden lg:flex flex-col gap-8 justify-center items-center max-w-[278px]'
+          initial='hidden'
+          animate='visible'
           variants={containerVariants}
         >
           <motion.div variants={itemVariants}>
-            <Link href="/">
-              <div className="flex flex-col gap-2">
+            <Link href='/'>
+              <div className='flex flex-col gap-2'>
                 <motion.div variants={logoVariants} whileHover={{ rotate: 10 }}>
-                  <Image src={Cube} alt="cube" width={56} height={56} />
+                  <Image src={Cube} alt='cube' width={56} height={56} />
                 </motion.div>
                 <motion.h1
-                  className="md:text-4xl lg:text-5xl font-bold"
+                  className='md:text-4xl lg:text-5xl font-bold'
                   variants={itemVariants}
                 >
                   ShopDesk
@@ -159,12 +159,12 @@ function SignInContent() {
               </div>
             </Link>
             <motion.p
-              className="text-[#1B1B1B] mt-2 text-2xl font-bold"
+              className='text-[#1B1B1B] mt-2 text-2xl font-bold'
               variants={itemVariants}
             >
-              Run your Business with{" "}
+              Run your Business with{' '}
               <motion.span
-                className="text-[#009A49] font-semibold"
+                className='text-[#009A49] font-semibold'
                 animate={{ opacity: [0.7, 1, 0.7] }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
@@ -180,7 +180,7 @@ function SignInContent() {
           >
             <Image
               src={Illustration}
-              alt="Illustration"
+              alt='Illustration'
               width={278}
               height={321}
               quality={90}
@@ -191,23 +191,23 @@ function SignInContent() {
 
         {/* right */}
         <motion.div
-          className="max-w-[588px] w-full"
-          initial="hidden"
-          animate="visible"
+          className='max-w-[588px] w-full'
+          initial='hidden'
+          animate='visible'
           variants={formVariants}
         >
           <motion.div
-            className="w-full max-h-[658px] bg-gradient-to-r from-[#FFFFFF66] to-[#FFFFFF00] p-8 py-20 rounded-[40px] shadow-sm backdrop-blur-md"
-            initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+            className='w-full max-h-[658px] bg-gradient-to-r from-[#FFFFFF66] to-[#FFFFFF00] p-8 py-20 rounded-[40px] shadow-sm backdrop-blur-md'
+            initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
             animate={{
               opacity: 1,
-              backdropFilter: "blur(10px)",
-              boxShadow: "0 10px 25px rgba(0, 0, 0, 0.05)",
+              backdropFilter: 'blur(10px)',
+              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.05)',
             }}
             transition={{ duration: 0.8 }}
           >
             <motion.h2
-              className="text-4xl md:text-5xl font-semibold text-center mb-6"
+              className='text-4xl md:text-5xl font-semibold text-center mb-6'
               variants={itemVariants}
             >
               Sign in
@@ -215,40 +215,40 @@ function SignInContent() {
 
             <motion.form
               onSubmit={handleSubmit}
-              className="flex flex-col gap-6"
+              className='flex flex-col gap-6'
               variants={containerVariants}
             >
               <motion.div
-                className="flex flex-col gap-1.5"
+                className='flex flex-col gap-1.5'
                 variants={itemVariants}
               >
-                <label htmlFor="email" className="block text-sm font-medium">
-                  Email address <span className="text-[#FF1925]">*</span>
+                <label htmlFor='email' className='block text-sm font-medium'>
+                  Email address <span className='text-[#FF1925]'>*</span>
                 </label>
                 <motion.input
-                  type="email"
-                  id="email"
+                  type='email'
+                  id='email'
                   className={`w-full p-3 border rounded-[9px] outline-none text-[#2A2A2A]
                     ${
                       touched.email && !email
-                        ? "border-red-500"
-                        : "border-gray-300"
+                        ? 'border-red-500'
+                        : 'border-gray-300'
                     }
                     ${
-                      email ? "focus:border-[#009A49] focus:ring-[#CCEBDB]" : ""
+                      email ? 'focus:border-[#009A49] focus:ring-[#CCEBDB]' : ''
                     }`}
-                  placeholder="johnwick@gmail.com"
+                  placeholder='johnwick@gmail.com'
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   onBlur={() =>
                     setTouched((prev) => ({ ...prev, email: true }))
                   }
                   whileFocus={{ scale: 1.01 }}
-                  transition={{ type: "spring", stiffness: 400 }}
+                  transition={{ type: 'spring', stiffness: 400 }}
                 />
                 {touched.email && !email && (
                   <motion.p
-                    className="text-red-500 text-sm"
+                    className='text-red-500 text-sm'
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
@@ -260,38 +260,38 @@ function SignInContent() {
 
               {/* Password Field */}
               <motion.div
-                className="flex flex-col gap-1.5"
+                className='flex flex-col gap-1.5'
                 variants={itemVariants}
               >
-                <label htmlFor="password" className="block text-sm font-medium">
-                  Your password <span className="text-[#FF1925]">*</span>
+                <label htmlFor='password' className='block text-sm font-medium'>
+                  Your password <span className='text-[#FF1925]'>*</span>
                 </label>
                 <motion.input
-                  type="password"
-                  id="password"
+                  type='password'
+                  id='password'
                   className={`w-full p-3 border rounded-[9px] outline-none text-[#2A2A2A]
                     ${
                       touched.password && !password
-                        ? "border-red-500"
-                        : "border-gray-300"
+                        ? 'border-red-500'
+                        : 'border-gray-300'
                     }
                     ${
                       password
-                        ? "focus:border-[#009A49] focus:ring-[#CCEBDB]"
-                        : ""
+                        ? 'focus:border-[#009A49] focus:ring-[#CCEBDB]'
+                        : ''
                     }`}
-                  placeholder="*************"
+                  placeholder='*************'
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   onBlur={() =>
                     setTouched((prev) => ({ ...prev, password: true }))
                   }
                   whileFocus={{ scale: 1.01 }}
-                  transition={{ type: "spring", stiffness: 400 }}
+                  transition={{ type: 'spring', stiffness: 400 }}
                 />
                 {touched.password && !password && (
                   <motion.p
-                    className="text-red-500 text-sm"
+                    className='text-red-500 text-sm'
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
@@ -304,7 +304,7 @@ function SignInContent() {
               {/* Error Message */}
               {error && (
                 <motion.p
-                  className="text-red-600 text-center"
+                  className='text-red-600 text-center'
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.3 }}
@@ -314,33 +314,33 @@ function SignInContent() {
               )}
 
               <motion.button
-                type="submit"
-                className="w-full bg-[#2A2A2A] text-white p-3 rounded-lg font-medium hover:bg-black transition duration-200 flex justify-center items-center gap-2"
+                type='submit'
+                className='w-full bg-[#2A2A2A] text-white p-3 rounded-lg font-medium hover:bg-black transition duration-200 flex justify-center items-center gap-2'
                 disabled={loading}
                 variants={buttonVariants}
-                whileHover="hover"
-                whileTap="tap"
+                whileHover='hover'
+                whileTap='tap'
               >
                 {loading ? (
                   <motion.span
-                    className="size-5 border-2 border-white border-t-transparent rounded-full"
+                    className='size-5 border-2 border-white border-t-transparent rounded-full'
                     animate={{ rotate: 360 }}
                     transition={{
                       duration: 1,
                       repeat: Infinity,
-                      ease: "linear",
+                      ease: 'linear',
                     }}
                   ></motion.span>
                 ) : (
-                  "Sign in"
+                  'Sign in'
                 )}
               </motion.button>
               <motion.p
-                className="text-center text-xs text-gray-600"
+                className='text-center text-xs text-gray-600'
                 variants={itemVariants}
               >
-                Don&apos;t have an account?{" "}
-                <a href="/sign-up" className="text-[#009A49] hover:underline">
+                Don&apos;t have an account?{' '}
+                <a href='/sign-up' className='text-[#009A49] hover:underline'>
                   Sign up
                 </a>
               </motion.p>

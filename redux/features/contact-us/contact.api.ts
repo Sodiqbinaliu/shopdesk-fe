@@ -1,4 +1,4 @@
-import { api } from "@/redux/api";
+import { api } from '@/redux/api';
 
 interface ContactFormRequest {
   firstName: string;
@@ -20,8 +20,8 @@ export const contactApi = api.injectEndpoints({
       ContactFormRequest
     >({
       query: (formData) => ({
-        url: "/contact",
-        method: "POST",
+        url: '/contact',
+        method: 'POST',
         body: formData,
       }),
       invalidatesTags: [],

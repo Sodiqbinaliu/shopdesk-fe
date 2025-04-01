@@ -1,6 +1,6 @@
-import { RootState } from "@/redux/store";
-import { Product } from "@/types/product";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { RootState } from '@/redux/store';
+import { Product } from '@/types/product';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface CartItem extends Product {
   id: string;
@@ -20,14 +20,14 @@ interface CartState {
 
 const initialState: CartState = {
   items: [],
-  searchText: "",
+  searchText: '',
   totalQuantity: 0,
   totalPrice: 0,
   salesCount: 0,
 };
 
 const cartSlice = createSlice({
-  name: "cart",
+  name: 'cart',
   initialState,
   reducers: {
     addToCart: (state, action: PayloadAction<Product>) => {

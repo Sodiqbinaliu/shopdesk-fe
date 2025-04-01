@@ -53,27 +53,36 @@ export const preferencesSlice = createSlice({
     updateCurrency: (state, action: PayloadAction<string>) => {
       state.currency = action.payload;
     },
-    setPaymentMethod: (state, action: PayloadAction<{
-      bankTransfer: boolean;
-      paypal: boolean;
-      stripe: boolean;
-    }>) => {
+    setPaymentMethod: (
+      state,
+      action: PayloadAction<{
+        bankTransfer: boolean;
+        paypal: boolean;
+        stripe: boolean;
+      }>
+    ) => {
       state.paymentMethods = action.payload;
     },
     updateAccountDetails: (state, action: PayloadAction<string>) => {
       state.accountDetails = action.payload;
     },
-    updateTaxSettings: (state, action: PayloadAction<{
-      field: keyof TaxSettings;
-      value: boolean | string;
-    }>) => {
+    updateTaxSettings: (
+      state,
+      action: PayloadAction<{
+        field: keyof TaxSettings;
+        value: boolean | string;
+      }>
+    ) => {
       const { field, value } = action.payload;
       state.taxSettings[field] = value as never;
     },
-    updateInventorySettings: (state, action: PayloadAction<{
-      field: keyof InventorySettings;
-      value: boolean | string;
-    }>) => {
+    updateInventorySettings: (
+      state,
+      action: PayloadAction<{
+        field: keyof InventorySettings;
+        value: boolean | string;
+      }>
+    ) => {
       const { field, value } = action.payload;
       state.inventorySettings[field] = value as never;
     },
@@ -81,13 +90,13 @@ export const preferencesSlice = createSlice({
   },
 });
 
-export const { 
+export const {
   updateCurrency,
   setPaymentMethod,
   updateAccountDetails,
   updateTaxSettings,
   updateInventorySettings,
-  resetPreferences
+  resetPreferences,
 } = preferencesSlice.actions;
 
 export default preferencesSlice.reducer;

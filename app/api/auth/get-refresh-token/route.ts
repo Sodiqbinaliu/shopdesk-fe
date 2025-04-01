@@ -1,24 +1,24 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
 export async function GET(req: Request) {
-  const cookies = req.headers.get("cookie");
+  const cookies = req.headers.get('cookie');
 
-  if (!cookies || !cookies.includes("refresh_token=")) {
+  if (!cookies || !cookies.includes('refresh_token=')) {
     return NextResponse.json(
-      { error: "No refresh token found" },
+      { error: 'No refresh token found' },
       { status: 401 }
     );
   }
 
   // Extract refresh_token manually
   const refreshToken = cookies
-    .split("; ")
-    .find((row) => row.startsWith("refresh_token="))
-    ?.split("=")[1];
+    .split('; ')
+    .find((row) => row.startsWith('refresh_token='))
+    ?.split('=')[1];
 
   if (!refreshToken) {
     return NextResponse.json(
-      { error: "Invalid refresh token" },
+      { error: 'Invalid refresh token' },
       { status: 401 }
     );
   }

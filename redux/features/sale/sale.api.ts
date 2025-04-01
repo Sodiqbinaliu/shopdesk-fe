@@ -1,4 +1,4 @@
-import { api } from "@/redux/api";
+import { api } from '@/redux/api';
 
 export interface ProductSold {
   product_id: string;
@@ -100,10 +100,10 @@ export const salesApi = api.injectEndpoints({
         products_sold,
       }) => ({
         url: `sales`,
-        method: "POST",
+        method: 'POST',
         body: { organization_id, customer_id, currency_code, products_sold },
       }),
-      invalidatesTags: ["Sale"],
+      invalidatesTags: ['Sale'],
     }),
     getSales: builder.query<
       GetSalesResponse,
@@ -124,14 +124,14 @@ export const salesApi = api.injectEndpoints({
         date_time,
         page = 1,
         size = 50,
-        filter = "all",
+        filter = 'all',
         my_sales = false,
-        sorting_key = "date_created_db",
+        sorting_key = 'date_created_db',
         reverse_sort = true,
         use_db = true,
       }) => ({
         url: `sales`,
-        method: "GET",
+        method: 'GET',
         params: {
           organization_id,
           date_time,
@@ -144,7 +144,7 @@ export const salesApi = api.injectEndpoints({
           use_db,
         },
       }),
-      providesTags: ["Sale"],
+      providesTags: ['Sale'],
       transformResponse: (response: GetSalesResponse, meta, arg) => {
         const { reverse_sort = true } = arg;
         const sortedItems = response.items.sort((a, b) => {

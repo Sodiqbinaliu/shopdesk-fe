@@ -1,5 +1,5 @@
-import { StockItemResponse } from "@/types/stocks";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { StockItemResponse } from '@/types/stocks';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface StockItemWithQuantity extends StockItemResponse {
   quantity: number; // Locally managed quantity
@@ -14,13 +14,13 @@ interface SalesState {
 
 const initialState: SalesState = {
   activeItem: null,
-  searchText: "",
+  searchText: '',
   selectedItems: [],
   currentTime: new Date().toLocaleTimeString(),
 };
 
 const salesSlice = createSlice({
-  name: "sales",
+  name: 'sales',
   initialState,
   reducers: {
     setActiveItem: (state, action: PayloadAction<number | null>) => {

@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import Sidebar from "@/components/functional/sidebar";
-import AddStockModal from "@/components/modal/add-item";
+import Sidebar from '@/components/functional/sidebar';
+import AddStockModal from '@/components/modal/add-item';
 import {
   Table,
   TableBody,
@@ -9,7 +9,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -23,12 +23,12 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table";
-import { X } from "lucide-react";
-import * as React from "react";
-import { DataTablePagination } from "./data-table-pagination";
-import { DataTableToolbar } from "./data-table-toolbar";
-import EmptyStock from "./empty-stock-state";
+} from '@tanstack/react-table';
+import { X } from 'lucide-react';
+import * as React from 'react';
+import { DataTablePagination } from './data-table-pagination';
+import { DataTableToolbar } from './data-table-toolbar';
+import EmptyStock from './empty-stock-state';
 
 interface DataTableProps<TData extends { id: string | number }, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -71,7 +71,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
     return baseColumns.map((col) => ({
       ...col,
       cell: (props: any) => {
-        if (typeof col.cell === "function") {
+        if (typeof col.cell === 'function') {
           return col.cell({
             ...props,
             table: {
@@ -116,27 +116,27 @@ export function DataTable<TData extends { id: string | number }, TValue>({
   };
 
   return (
-    <div className="flex w-full h-full gap-6">
+    <div className='flex w-full h-full gap-6'>
       <div
         className={`transition-all duration-200 ${
-          isSidebarOpen ? "w-[calc(100%-365px)]" : "w-full"
+          isSidebarOpen ? 'w-[calc(100%-365px)]' : 'w-full'
         }`}
       >
-        <div className="flex flex-col border border-gray-200 rounded-lg h-full overflow-hidden">
-          <div className="p-4 border-b lg:border-0 lg:absolute lg:top-9 lg:-right-2">
+        <div className='flex flex-col border border-gray-200 rounded-lg h-full overflow-hidden'>
+          <div className='p-4 border-b lg:border-0 lg:absolute lg:top-9 lg:-right-2'>
             <DataTableToolbar table={table} />
           </div>
 
-          <div className="flex-1 overflow-x-auto">
-            <Table className="min-w-full">
-              <TableHeader className="bg-white">
+          <div className='flex-1 overflow-x-auto'>
+            <Table className='min-w-full'>
+              <TableHeader className='bg-white'>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => (
                       <TableHead
                         key={header.id}
                         colSpan={header.colSpan}
-                        className="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b border-r border-gray-200 last:border-r-0"
+                        className='px-4 py-3 text-left text-sm font-medium text-gray-700 border-b border-r border-gray-200 last:border-r-0'
                       >
                         {header.isPlaceholder
                           ? null
@@ -149,12 +149,12 @@ export function DataTable<TData extends { id: string | number }, TValue>({
                   </TableRow>
                 ))}
               </TableHeader>
-              <TableBody className="bg-white">
+              <TableBody className='bg-white'>
                 {loading ? (
                   <TableRow>
                     <TableCell
                       colSpan={columns.length}
-                      className="h-24 text-center"
+                      className='h-24 text-center'
                     >
                       Loading stocks...
                     </TableCell>
@@ -163,7 +163,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
                   <TableRow>
                     <TableCell
                       colSpan={columns.length}
-                      className="h-24 text-center text-red-500 flex gap-4"
+                      className='h-24 text-center text-red-500 flex gap-4'
                     >
                       <X /> <span>Error Fetching Stocks</span>
                     </TableCell>
@@ -172,14 +172,14 @@ export function DataTable<TData extends { id: string | number }, TValue>({
                   table.getRowModel().rows.map((row) => (
                     <TableRow
                       key={row.original.id}
-                      data-state={row.getIsSelected() && "selected"}
+                      data-state={row.getIsSelected() && 'selected'}
                       onClick={() => handleRowClick(row.original)}
-                      className="hover:bg-gray-50 cursor-pointer"
+                      className='hover:bg-gray-50 cursor-pointer'
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell
                           key={cell.id}
-                          className="px-4 py-3 text-sm text-gray-800 border-b border-r border-gray-200 last:border-r-0"
+                          className='px-4 py-3 text-sm text-gray-800 border-b border-r border-gray-200 last:border-r-0'
                         >
                           {flexRender(
                             cell.column.columnDef.cell,
@@ -193,7 +193,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
                   <TableRow>
                     <TableCell
                       colSpan={columns.length}
-                      className="h-24 text-center text-gray-500 border-b border-gray-200"
+                      className='h-24 text-center text-gray-500 border-b border-gray-200'
                     >
                       <EmptyStock
                         onClick={() => setIsAddStockModalOpen(true)}
@@ -205,7 +205,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
             </Table>
           </div>
 
-          <div className="sticky bottom-0 bg-white px-4 py-3 border-t border-gray-200">
+          <div className='sticky bottom-0 bg-white px-4 py-3 border-t border-gray-200'>
             <DataTablePagination table={table} />
           </div>
         </div>
@@ -213,7 +213,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
 
       {/* Sidebar */}
       {isSidebarOpen && selectedRow && (
-        <div className="w-[365px] flex-shrink-0">
+        <div className='w-[365px] flex-shrink-0'>
           <Sidebar
             selectedItem={selectedRow}
             onClose={() => setIsSidebarOpen(false)}
