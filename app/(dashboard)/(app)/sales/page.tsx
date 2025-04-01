@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import SalesModal from "@/components/modal/salesmodal/sales-modal";
 import { Button } from "@/components/ui/button";
@@ -9,12 +10,16 @@ import {
 } from "@/redux/features/customer/customer.api";
 import { useGetProductsForSaleQuery } from "@/redux/features/product/product.api";
 import {
+  clearCart,
+  updateSalesCountFromData,
+} from "@/redux/features/product/product.slice";
+import {
   useCreateSaleMutation,
   useGetSalesQuery,
 } from "@/redux/features/sale/sale.api";
-import { RootState } from "@/redux/store";
+import { AppDispatch, RootState } from "@/redux/store";
 import { useStore } from "@/store/useStore";
-import { StockItemResponse } from "@/types/stocks";
+import { Product } from "@/types/product";
 import { formatDate } from "@/utils";
 import {
   type Column,
@@ -23,7 +28,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { columns, type Sale } from "./components/columns";
 import { DataTable } from "./components/data-table";
@@ -56,6 +61,8 @@ export default function SalesPage() {
     }
   );
 
+  const salesCount = salesData?.items.length;
+
   const formattedSales = salesData?.items?.flatMap((sale) =>
     sale.products_sold.map((product) => {
       const { date, time } = formatDate(product.date_created);
@@ -72,14 +79,15 @@ export default function SalesPage() {
     })
   );
 
-  const { data: ProductsData, isFetching } = useGetProductsForSaleQuery(
-    {
-      organization_id: organizationId,
-    },
-    {
-      refetchOnMountOrArgChange: true,
-    }
-  );
+  const { data: ProductsData, isFetching: isFetchingProducts } =
+    useGetProductsForSaleQuery(
+      {
+        organization_id: organizationId,
+      },
+      {
+        refetchOnMountOrArgChange: true,
+      }
+    );
   const { data: customersData, isFetching: isFetchingCustomers } =
     useGetCustomersQuery(
       {
@@ -110,11 +118,6 @@ export default function SalesPage() {
     pageCount: Math.ceil((formattedSales?.length || 0) / 5),
   });
 
-  const selectedItems = useSelector(
-    (state: RootState) => state.sales.selectedItems
-  );
-  const firstSelectedItemId = selectedItems[0]?.id;
-
   const handleRowHover = (tableId: string, rowId: string) => {
     setHoveredRow({ tableId, rowId });
   };
@@ -125,8 +128,10 @@ export default function SalesPage() {
   const toggleSalesModal = () => {
     setShowModal((prev) => !prev);
   };
-
+  const cart = useSelector((state: RootState) => state.cart.items);
   const completeSale = async () => {
+    console.log("cart items", cart);
+
     if (!organizationId) return;
 
     let customer = customersData?.items?.[0]; // Pick the first customer if available
@@ -145,31 +150,41 @@ export default function SalesPage() {
     }
 
     if (!customer) return;
+    console.log("customer id:", customer);
 
-    const products_sold = [
-      {
-        product_id: firstSelectedItemId,
-        amount: 1,
-        quantity: 1,
-        currency_code: "NGN",
-      },
-    ];
+    const products_sold = cart.map((item) => ({
+      product_id: item.id,
+      amount: item.price,
+      quantity: item.quantity,
+      currency_code: "NGN",
+    }));
 
     try {
-      const saleResponse = await createSale({
+      await createSale({
         organization_id: organizationId,
         customer_id: customer.id,
         currency_code: customer.default_currency_code || "NGN",
         products_sold,
       })
         .unwrap()
-        .then(() => setShowModal(false));
-      console.log("Sale created:", saleResponse);
-      toast.success("Sale created. Please wait to view it.");
+        .then((response) => {
+          toast.success("Sale created. Please wait to view it.");
+          console.log("Sale created:", response);
+          setShowModal(false);
+          dispatch(clearCart());
+        });
     } catch (error) {
       console.error("Error creating sale:", error);
     }
   };
+
+  const dispatch: AppDispatch = useDispatch();
+
+  React.useEffect(() => {
+    if (salesData?.items) {
+      dispatch(updateSalesCountFromData(salesData.items.length));
+    }
+  }, [salesData, dispatch]);
 
   const groupedData = React.useMemo(() => {
     if (!formattedSales) return [];
@@ -188,7 +203,7 @@ export default function SalesPage() {
         <Button
           variant="outline"
           onClick={toggleSalesModal}
-          className="absolute top-14 right-0 max-[400px]:text-sm text-nowrap max-[1000px]:hidden mr-2 disabled:opacity-50 text-black border-black"
+          className="absolute top-10 right-0 max-[400px]:text-sm text-nowrap max-[1000px]:hidden mr-2 disabled:opacity-50 text-black border-black"
         >
           + Add New Sale
         </Button>
@@ -265,6 +280,7 @@ export default function SalesPage() {
                   table={table}
                   viewType={viewType}
                   setViewType={setViewType}
+                  salesCount={salesCount}
                 />
               </div>
             </div>
@@ -276,10 +292,11 @@ export default function SalesPage() {
         isOpen={showModal}
         onClose={toggleSalesModal}
         onCompleteSale={completeSale}
+        isFetchingProducts={isFetchingProducts}
         isCreatingSale={isCreatingSale}
         isCreatingCustomer={isCreatingCustomer}
         isFetchingCustomers={isFetchingCustomers}
-        stockItems={stockItems as unknown as StockItemResponse[]}
+        stockItems={stockItems as unknown as Product[]}
       />
     </React.Fragment>
   );

@@ -102,7 +102,7 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                   onMouseEnter={() => row.index === 0 && onRowHover?.(row.id)}
                   onMouseLeave={onRowLeave}
-                  className="hover:bg-gray-50 cursor-pointer overflow-x-auto grid grid-cols-4 border-b border-gray-200 first:h-11 "
+                  className="hover:bg-gray-50 overflow-x-auto grid grid-cols-4 border-b border-gray-200 first:h-11 "
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell

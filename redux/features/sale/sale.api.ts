@@ -145,6 +145,16 @@ export const salesApi = api.injectEndpoints({
         },
       }),
       providesTags: ["Sale"],
+      transformResponse: (response: GetSalesResponse, meta, arg) => {
+        const { reverse_sort = true } = arg;
+        const sortedItems = response.items.sort((a, b) => {
+          const dateA = new Date(a.date_created_db).getTime();
+          const dateB = new Date(b.date_created_db).getTime();
+          return reverse_sort ? dateB - dateA : dateA - dateB;
+        });
+
+        return { ...response, items: sortedItems };
+      },
     }),
   }),
 });
