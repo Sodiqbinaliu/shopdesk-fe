@@ -55,7 +55,7 @@ const getAllProductIds = async (
 
 export async function POST(req: Request) {
   try {
-    const { organization_id, sale_status } = await req.json();
+    const { organization_id } = await req.json();
 
     if (!organization_id) {
       return NextResponse.json(
@@ -75,7 +75,7 @@ export async function POST(req: Request) {
     const product_ids = await getAllProductIds(organization_id, accessToken);
 
     const response = await fetch(
-      "https://api.timbu.cloud/sales/weekday-count",
+      "https://api.timbu.cloud/products/profit-analytics",
       {
         method: "POST",
         headers: {
@@ -88,13 +88,12 @@ export async function POST(req: Request) {
           product_ids,
           date_range_start: start,
           date_range_end: end,
-          sale_status,
         }),
       }
     );
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch sales data: ${response.status}`);
+      throw new Error(`Failed to fetch profit analytics: ${response.status}`);
     }
 
     const results = await response.json();

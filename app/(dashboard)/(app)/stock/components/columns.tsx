@@ -12,7 +12,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { TableMeta } from "./data-table";
 import { DataTableColumnHeader } from "./data-table-column-header";
 // import { DataTableRowActions } from "./data-table-row-actions";
-import { useGetSalesThisWeekQuery } from "@/redux/features/sale/sale.api";
+import {
+  useGetProfitsOfStocksQuery,
+  useGetSalesThisWeekQuery,
+} from "@/redux/features/sale/sale.api";
+import { useGetStocksQuery } from "@/redux/features/stock/stock.api";
 import type { Stock } from "./data/schema";
 import { EditableCell } from "./editable-cell";
 import { ProfitColumnHeader } from "./profit-column/profit-column-header";
@@ -101,22 +105,49 @@ const ProfitHeader = ({ table }: { table: any }) => {
   );
 };
 
-const ProfitCell = () => {
+const ProfitCell = ({ row }: { row: any }) => {
   const isExpanded = useSelector(
     (state: RootState) => state.toggleTableState.isProfitExpanded
   );
 
+  const { organizationId } = useStore();
+  const { data: profitData, isLoading: isProfitLoading } =
+    useGetProfitsOfStocksQuery({
+      organization_id: organizationId,
+    });
+
+  const { data: stocksData, isFetching: isCostPriceFetching } =
+    useGetStocksQuery(organizationId);
+
+  if (isProfitLoading || isCostPriceFetching) {
+    return (
+      <div className="flex items-center justify-center">
+        <Icons.LoadingIcon />
+      </div>
+    );
+  }
+
+  const productProfit =
+    profitData?.data?.[String(row.original.product_id)] ?? 0;
+  const stockItem = stocksData?.find(
+    (stock) => stock.product_id === row.original.product_id
+  );
+
+  const productCostPrice = stockItem?.buying_price ?? 0;
+
   if (!isExpanded) {
-    return <div className="flex items-center justify-center">{0}</div>;
+    return (
+      <div className="flex items-center justify-center">{productProfit}</div>
+    );
   }
 
   return (
     <div className="grid grid-cols-2">
       <div className="p-5 border-r border-solid border-gray-200 rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative text-center">
-        {0}
+        {productCostPrice}
       </div>
       <div className="border-none p-5 rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative text-center">
-        {0}
+        {productProfit}
       </div>
     </div>
   );

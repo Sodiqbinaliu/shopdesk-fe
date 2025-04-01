@@ -94,6 +94,10 @@ export interface WeeklySalesResponse {
   data: Record<string, Record<string, number | null> | null>;
 }
 
+export interface ProfitResponse {
+  data: Record<string, number | null>;
+}
+
 export const salesApi = api.injectEndpoints({
   endpoints: (builder) => ({
     createSale: builder.mutation<CreateSaleResponse, CreateSaleRequest>({
@@ -169,7 +173,18 @@ export const salesApi = api.injectEndpoints({
         method: "POST",
         body: { organization_id },
       }),
-      providesTags: ["Sale"],
+      providesTags: ["Stock"],
+    }),
+    getProfitsOfStocks: builder.query<
+      ProfitResponse,
+      { organization_id: string }
+    >({
+      query: ({ organization_id }) => ({
+        url: `sales/profit`,
+        method: "POST",
+        body: { organization_id },
+      }),
+      providesTags: ["Stock"],
     }),
   }),
 });
@@ -178,4 +193,5 @@ export const {
   useCreateSaleMutation,
   useGetSalesQuery,
   useGetSalesThisWeekQuery,
+  useGetProfitsOfStocksQuery,
 } = salesApi;
