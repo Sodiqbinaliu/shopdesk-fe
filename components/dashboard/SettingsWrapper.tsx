@@ -1,6 +1,6 @@
-"use client";
-import { useState } from "react";
-import Settings from "@/app/(dashboard)/settings/page";
+'use client';
+import { useState } from 'react';
+import Settings from '@/app/(dashboard)/settings/page';
 
 const SettingsWrapper = () => {
   const [showSettings] = useState(false);

@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { Button } from '@/components/ui/button';
 import {
   setNewOrders,
@@ -20,7 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogAction,
-  AlertDialogCancel
+  AlertDialogCancel,
 } from '@/components/ui/alert-dialog';
 
 const Notification: React.FC = () => {
@@ -35,26 +35,26 @@ const Notification: React.FC = () => {
     failedPayments,
     paymentNotificationMethod,
   } = useAppSelector((state) => state.notification);
-  
+
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   const ToggleSwitch = ({
     checked,
-    onChange
+    onChange,
   }: {
     checked: boolean;
     onChange: (checked: boolean) => void;
   }) => (
-    <label className="relative inline-flex items-center cursor-pointer">
+    <label className='relative inline-flex items-center cursor-pointer'>
       <input
-        type="checkbox"
-        className="sr-only peer"
+        type='checkbox'
+        className='sr-only peer'
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
       />
-      <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-[#009A49] mr-60 transition-colors" />
-      <span className="absolute w-4 h-4 bg-white rounded-full left-1 top-1 peer-checked:translate-x-5 transition-transform" />
+      <div className='w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-[#009A49] mr-60 transition-colors' />
+      <span className='absolute w-4 h-4 bg-white rounded-full left-1 top-1 peer-checked:translate-x-5 transition-transform' />
     </label>
   );
 
@@ -62,7 +62,7 @@ const Notification: React.FC = () => {
     options,
     value,
     onChange,
-    selectWidth = '352px'
+    selectWidth = '352px',
   }: {
     options: { label: string; value: string }[];
     value: string;
@@ -70,26 +70,35 @@ const Notification: React.FC = () => {
     selectWidth?: string;
   }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const selectedLabel = options.find(opt => opt.value === value)?.label || '';
+    const selectedLabel =
+      options.find((opt) => opt.value === value)?.label || '';
 
     return (
-      <div className="relative w-full sm:w-[352px]" style={{ maxWidth: selectWidth }}>
+      <div
+        className='relative w-full sm:w-[352px]'
+        style={{ maxWidth: selectWidth }}
+      >
         <div
-          className="w-full h-[62px] border border-[#e9eaeb] rounded-[12px] p-2 font-circular-light text-[#535862] text-base leading-5 font-[400] bg-white cursor-pointer flex items-center justify-between"
+          className='w-full h-[62px] border border-[#e9eaeb] rounded-[12px] p-2 font-circular-light text-[#535862] text-base leading-5 font-[400] bg-white cursor-pointer flex items-center justify-between'
           onClick={() => setIsOpen(!isOpen)}
         >
           <span>{selectedLabel}</span>
           <svg
             className={`w-5 h-5 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+            fill='none'
+            stroke='currentColor'
+            viewBox='0 0 24 24'
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+            <path
+              strokeLinecap='round'
+              strokeLinejoin='round'
+              strokeWidth='2'
+              d='M19 9l-7 7-7-7'
+            />
           </svg>
         </div>
         {isOpen && (
-          <div className="absolute right-0 w-[239px] bg-white border border-[#e9eaeb] rounded-[12px] mt-1 z-10 overflow-hidden">
+          <div className='absolute right-0 w-[239px] bg-white border border-[#e9eaeb] rounded-[12px] mt-1 z-10 overflow-hidden'>
             {options.map((option) => (
               <div
                 key={option.value}
@@ -140,7 +149,7 @@ const Notification: React.FC = () => {
             >
               Cancel
             </Button>
-            <Button 
+            <Button
               className='px-6 py-3 text-base cursor-pointer'
               onClick={handleSave}
             >
@@ -167,7 +176,9 @@ const Notification: React.FC = () => {
                 </p>
                 <ToggleSwitch
                   checked={orderStatusUpdates}
-                  onChange={(checked) => dispatch(setOrderStatusUpdates(checked))}
+                  onChange={(checked) =>
+                    dispatch(setOrderStatusUpdates(checked))
+                  }
                 />
               </div>
               <div className='flex flex-row items-center justify-between gap-3 py-2'>
@@ -182,7 +193,7 @@ const Notification: React.FC = () => {
                   ]}
                   value={notificationMethod}
                   onChange={(value) => dispatch(setNotificationMethod(value))}
-                  selectWidth="288px"
+                  selectWidth='288px'
                 />
               </div>
             </NotificationSection>
@@ -194,7 +205,9 @@ const Notification: React.FC = () => {
                 </p>
                 <ToggleSwitch
                   checked={weeklySalesReport}
-                  onChange={(checked) => dispatch(setWeeklySalesReport(checked))}
+                  onChange={(checked) =>
+                    dispatch(setWeeklySalesReport(checked))
+                  }
                 />
               </div>
               <div className='flex flex-row items-center justify-between py-2'>
@@ -203,7 +216,9 @@ const Notification: React.FC = () => {
                 </p>
                 <ToggleSwitch
                   checked={monthlyPerformance}
-                  onChange={(checked) => dispatch(setMonthlyPerformance(checked))}
+                  onChange={(checked) =>
+                    dispatch(setMonthlyPerformance(checked))
+                  }
                 />
               </div>
             </NotificationSection>
@@ -217,7 +232,9 @@ const Notification: React.FC = () => {
                 </p>
                 <ToggleSwitch
                   checked={successfulPayments}
-                  onChange={(checked) => dispatch(setSuccessfulPayments(checked))}
+                  onChange={(checked) =>
+                    dispatch(setSuccessfulPayments(checked))
+                  }
                 />
               </div>
               <div className='flex flex-row items-center justify-between py-2'>
@@ -240,8 +257,10 @@ const Notification: React.FC = () => {
                     { value: 'sms', label: 'SMS' },
                   ]}
                   value={paymentNotificationMethod}
-                  onChange={(value) => dispatch(setPaymentNotificationMethod(value))}
-                  selectWidth="288px"
+                  onChange={(value) =>
+                    dispatch(setPaymentNotificationMethod(value))
+                  }
+                  selectWidth='288px'
                 />
               </div>
             </NotificationSection>

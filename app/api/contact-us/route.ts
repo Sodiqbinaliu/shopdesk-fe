@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   try {
@@ -10,7 +10,7 @@ export async function POST(req: Request) {
 
     if (!firstName || !lastName || !email || !message) {
       return NextResponse.json(
-        { error: "All fields are required." },
+        { error: 'All fields are required.' },
         { status: 400 }
       );
     }
@@ -18,27 +18,27 @@ export async function POST(req: Request) {
     const payload = {
       name: `${firstName} ${lastName}`,
       email,
-      subject: "Buying ShopDesk Proposal",
-      message: `${message}\n\nPhone: ${phone || "Not provided"}`,
+      subject: 'Buying ShopDesk Proposal',
+      message: `${message}\n\nPhone: ${phone || 'Not provided'}`,
     };
 
-    const res = await fetch("https://api.timbu.cloud/contactus", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    const res = await fetch('https://api.timbu.cloud/contactus', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
 
     if (!res.ok) {
-      throw new Error("Failed to submit");
+      throw new Error('Failed to submit');
     }
 
     return NextResponse.json(
-      { success: "Your message has been sent!" },
+      { success: 'Your message has been sent!' },
       { status: 200 }
     );
   } catch {
     return NextResponse.json(
-      { error: "Something went wrong, please try again." },
+      { error: 'Something went wrong, please try again.' },
       { status: 500 }
     );
   }

@@ -12,7 +12,7 @@ const useTableAreaHeight = () => {
     };
 
     requestAnimationFrame(updateHeight);
-    
+
     console.log('tableAreaHeight', tableAreaHeight);
     window.addEventListener('resize', updateHeight);
 

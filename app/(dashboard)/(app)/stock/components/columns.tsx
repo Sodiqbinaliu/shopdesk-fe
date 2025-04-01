@@ -1,23 +1,23 @@
-"use client";
+'use client';
 
-import { Icons } from "@/components/ui/icons";
-import { useGetWeeklySalesQuery } from "@/redux/features/stock/stock.api";
+import { Icons } from '@/components/ui/icons';
+import { useGetWeeklySalesQuery } from '@/redux/features/stock/stock.api';
 import {
   toggleProfitExpand,
   toggleSalesExpand,
-} from "@/redux/features/table/toggle.slice";
-import { AppDispatch, RootState } from "@/redux/store";
-import { useStore } from "@/store/useStore";
-import { getDateStartRange } from "@/utils";
-import type { ColumnDef } from "@tanstack/react-table";
-import { useDispatch, useSelector } from "react-redux";
-import { TableMeta } from "./data-table";
-import { DataTableColumnHeader } from "./data-table-column-header";
+} from '@/redux/features/table/toggle.slice';
+import { AppDispatch, RootState } from '@/redux/store';
+import { useStore } from '@/store/useStore';
+import { getDateStartRange } from '@/utils';
+import type { ColumnDef } from '@tanstack/react-table';
+import { useDispatch, useSelector } from 'react-redux';
+import { TableMeta } from './data-table';
+import { DataTableColumnHeader } from './data-table-column-header';
 // import { DataTableRowActions } from "./data-table-row-actions";
-import type { Stock } from "./data/schema";
-import { EditableCell } from "./editable-cell";
-import { ProfitColumnHeader } from "./profit-column/profit-column-header";
-import { SalesColumnHeader } from "./sales-column/sales-column-header";
+import type { Stock } from './data/schema';
+import { EditableCell } from './editable-cell';
+import { ProfitColumnHeader } from './profit-column/profit-column-header';
+import { SalesColumnHeader } from './sales-column/sales-column-header';
 
 const SalesHeader = ({ table }: { table: any }) => {
   const dispatch: AppDispatch = useDispatch();
@@ -49,7 +49,7 @@ const SalesCell = ({ row }: { row: any }) => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center">
+      <div className='flex items-center justify-center'>
         <Icons.LoadingIcon />
       </div>
     );
@@ -61,25 +61,23 @@ const SalesCell = ({ row }: { row: any }) => {
 
   if (!isExpanded) {
     const totalSales = productSales
-      ? ["monday", "tuesday", "wednesday", "thursday", "friday"].reduce(
+      ? ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].reduce(
           (acc, day) => acc + (productSales[day] ?? 0),
           0
         )
       : 0;
 
-    return (
-      <div className="flex items-center justify-center">{totalSales}</div>
-    );
+    return <div className='flex items-center justify-center'>{totalSales}</div>;
   }
 
   return (
-    <div className="grid grid-cols-5 w-full">
-      {["monday", "tuesday", "wednesday", "thursday", "friday"].map((day) => (
+    <div className='grid grid-cols-5 w-full'>
+      {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((day) => (
         <div
           key={day}
-          className="border-r p-5 last:border-r-0 rounded-none text-sm w-full h-full text-center"
+          className='border-r p-5 last:border-r-0 rounded-none text-sm w-full h-full text-center'
         >
-          {productSales ? productSales[day] ?? 0 : 0}
+          {productSales ? (productSales[day] ?? 0) : 0}
         </div>
       ))}
     </div>
@@ -112,15 +110,15 @@ const ProfitCell = () => {
   );
 
   if (!isExpanded) {
-    return <div className="flex items-center justify-center">{0}</div>;
+    return <div className='flex items-center justify-center'>{0}</div>;
   }
 
   return (
-    <div className="grid grid-cols-2">
-      <div className="p-5 border-r border-solid border-gray-200 rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative text-center">
+    <div className='grid grid-cols-2'>
+      <div className='p-5 border-r border-solid border-gray-200 rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative text-center'>
         {0}
       </div>
-      <div className="border-none p-5 rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative text-center">
+      <div className='border-none p-5 rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative text-center'>
         {0}
       </div>
     </div>
@@ -155,19 +153,19 @@ export const columns: ColumnDef<Stock>[] = [
   //   enableHiding: false,
   // },
   {
-    accessorKey: "name",
+    accessorKey: 'name',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="ITEM NAME" />
+      <DataTableColumnHeader column={column} title='ITEM NAME' />
     ),
     cell: ({ row, table }) => {
-      const value = row.getValue<string>("name");
+      const value = row.getValue<string>('name');
       const updateSelectedRow = (
         table.options.meta as TableMeta<typeof row.original>
       )?.updateSelectedRow;
       return (
         <EditableCell
           value={value}
-          accessorKey="name"
+          accessorKey='name'
           stockId={row.original.id}
           rowData={row.original}
           updateSelectedRow={updateSelectedRow}
@@ -177,19 +175,19 @@ export const columns: ColumnDef<Stock>[] = [
     },
   },
   {
-    accessorKey: "buying_price",
+    accessorKey: 'buying_price',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="SELL PRICE" />
+      <DataTableColumnHeader column={column} title='SELL PRICE' />
     ),
     cell: ({ row, table }) => {
-      const value = row.getValue<string>("buying_price");
+      const value = row.getValue<string>('buying_price');
       const updateSelectedRow = (
         table.options.meta as TableMeta<typeof row.original>
       )?.updateSelectedRow;
       return (
         <EditableCell
           value={value}
-          accessorKey="buying_price"
+          accessorKey='buying_price'
           currency={row.original.currency_code}
           stockId={row.original.id}
           rowData={row.original}
@@ -203,9 +201,9 @@ export const columns: ColumnDef<Stock>[] = [
     size: 100,
   },
   {
-    accessorKey: "available",
+    accessorKey: 'available',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="AVAILABLE" />
+      <DataTableColumnHeader column={column} title='AVAILABLE' />
     ),
     cell: ({ row, table }) => {
       const value = row.original.quantity;
@@ -214,8 +212,8 @@ export const columns: ColumnDef<Stock>[] = [
       )?.updateSelectedRow;
       return (
         <EditableCell
-          value={String(value) || "0"}
-          accessorKey="quantity"
+          value={String(value) || '0'}
+          accessorKey='quantity'
           stockId={row.original.id}
           rowData={row.original}
           updateSelectedRow={updateSelectedRow}
@@ -228,27 +226,27 @@ export const columns: ColumnDef<Stock>[] = [
     size: 100,
   },
   {
-    accessorKey: "sales",
+    accessorKey: 'sales',
     header: SalesHeader,
     cell: SalesCell,
     enableSorting: true,
   },
   {
-    accessorKey: "profitGroup",
+    accessorKey: 'profitGroup',
     header: ProfitHeader,
     cell: ProfitCell,
     enableSorting: true,
   },
   {
-    id: "actions",
+    id: 'actions',
     header: () => {
       return (
         <div
-          className="h-full py-5 px-4 flex items-center justify-center bg-transparent hover:bg-black/10 transition-all duration-150 shadow-none cursor-pointer"
-          title="Add new Column"
+          className='h-full py-5 px-4 flex items-center justify-center bg-transparent hover:bg-black/10 transition-all duration-150 shadow-none cursor-pointer'
+          title='Add new Column'
         >
-          <div className="py-1.5 px-2">
-            <Icons.plus className="shrink-0" />
+          <div className='py-1.5 px-2'>
+            <Icons.plus className='shrink-0' />
           </div>
         </div>
       );

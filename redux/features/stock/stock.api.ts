@@ -1,4 +1,4 @@
-import { api } from "@/redux/api";
+import { api } from '@/redux/api';
 
 interface StockBase {
   id: string;
@@ -53,9 +53,9 @@ export const accessControlApi = api.injectEndpoints({
     getStocks: builder.query<StockResponse[], string>({
       query: (organizatiohn_id: string) => ({
         url: `/stocks/?organization_id=${organizatiohn_id}`,
-        method: "POST",
+        method: 'POST',
       }),
-      providesTags: ["Stock"],
+      providesTags: ['Stock'],
       keepUnusedDataFor: 3600,
       transformResponse: (response: StockResponse[]) => {
         return response.sort(
@@ -87,19 +87,19 @@ export const accessControlApi = api.injectEndpoints({
     >({
       query: ({ organization_id, product_ids, date_range_start }) => ({
         url: `/stocks/weekday-sale?organization_id=${organization_id}&date_range_start=${date_range_start}`,
-        method: "POST",
+        method: 'POST',
         body: { product_ids },
       }),
       providesTags: (result) =>
         result
-          ? result.map(({ product_id }) => ({ type: "Stock", product_id }))
-          : [{ type: "Stock", id: "LIST" }],
+          ? result.map(({ product_id }) => ({ type: 'Stock', product_id }))
+          : [{ type: 'Stock', id: 'LIST' }],
     }),
 
     addStock: builder.mutation<StockResponse, StockRequest>({
       query: (stockData) => ({
-        url: "/stocks/create",
-        method: "POST",
+        url: '/stocks/create',
+        method: 'POST',
         body: stockData,
       }),
       async onQueryStarted(stockData, { dispatch, queryFulfilled }) {
@@ -107,7 +107,7 @@ export const accessControlApi = api.injectEndpoints({
           const { data: newStock } = await queryFulfilled;
           dispatch(
             accessControlApi.util.updateQueryData(
-              "getStocks",
+              'getStocks',
               stockData.organization_id,
               (draft) => {
                 const updatedStocks = [newStock, ...draft];
@@ -121,7 +121,7 @@ export const accessControlApi = api.injectEndpoints({
             )
           );
         } catch (error) {
-          console.error("Failed to update cache:", error);
+          console.error('Failed to update cache:', error);
         }
       },
     }),
@@ -129,7 +129,7 @@ export const accessControlApi = api.injectEndpoints({
     editStock: builder.mutation<StockResponse, EditStockRequest>({
       query: (data) => ({
         url: `/stocks/edit`,
-        method: "PUT",
+        method: 'PUT',
         body: {
           stock_id: data.id,
           name: data.name,
@@ -139,7 +139,7 @@ export const accessControlApi = api.injectEndpoints({
           organization_id: data.organization_id,
         },
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: "Stock", id }],
+      invalidatesTags: (result, error, { id }) => [{ type: 'Stock', id }],
     }),
 
     // createStock: builder.mutation<

@@ -1,4 +1,4 @@
-import type { Sale } from "../components/columns";
+import type { Sale } from '../components/columns';
 
 export function processDataIntoGroups(data: Sale[]) {
   // Group data by time without re-sorting
@@ -13,7 +13,7 @@ export function processDataIntoGroups(data: Sale[]) {
             id: `total-${key}`,
             date: item.date,
             time: item.time,
-            itemName: "Total",
+            itemName: 'Total',
             quantitySold: 0,
             sellPrice: 0,
             profit: 0,
