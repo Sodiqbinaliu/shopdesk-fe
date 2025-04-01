@@ -5,10 +5,9 @@ import {
   SelectItem,
   SelectTrigger,
 } from '@/components/ui/select';
-import Image from 'next/image';
 import type { Table } from '@tanstack/react-table';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import Image from 'next/image';
+// import Image from 'next/image';
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;

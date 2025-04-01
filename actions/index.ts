@@ -1,5 +1,7 @@
 'use server';
 
+import { Product } from "@/types/product";
+
 export const getAllProductIds = async (
   organization_id: string,
   accessToken: string
