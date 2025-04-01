@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 const CreateOrganizationPage = async () => {
   const cookieStore = await cookies(); // ✅ await is now required
-  const token = cookieStore.get("refresh_token")?.value;
+  const token = cookieStore.get("access_token")?.value;
   if (!token) {
     redirect("/sign-in"); // or wherever your login page is
   }
