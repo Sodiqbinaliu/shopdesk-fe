@@ -2,22 +2,21 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Features } from "@/components/shared/features";
+// import { Features } from "@/components/shared/features";
 import Link from "next/link";
 import Image from "next/image";
-import Logo from "@/components/functional/logo";
-import settings from "@/public/icons/_ui-settings-01.svg";
-import viewDeleted from "@/public/icons/_ui-trash-03.svg";
-import { ChevronDown, Loader2, Plus, Search, X } from "lucide-react";
-import logout from "@/public/icons/_ui-log-out-02.svg";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-import { useStore } from "@/store/useStore";
+// import Logo from "@/components/functional/logo";
+// import settings from "@/public/icons/_ui-settings-01.svg";
+// import viewDeleted from "@/public/icons/_ui-trash-03.svg";
+// import { ChevronDown, Loader2, Plus, Search, X } from "lucide-react";
+// import logout from "@/public/icons/_ui-log-out-02.svg";
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu";
+// import { useStore } from "@/store/useStore";
 import BillingFooter from "./components/footer";
 import BillingHeader from "./components/header";
 
@@ -32,7 +31,7 @@ const Page = () => {
   }
 
   const [isAnnual, setIsAnnual] = useState(false);
-  const [plan, setPlan ] = useState("Free Plan")
+  const [plan] = useState("Free Plan")
 
   const horizontalRuleStyles: string = "bg-[#d0d0d0] h-[1px] w-full";
   const priceCardContent: PriceCardContentOptions[] = [
@@ -135,8 +134,9 @@ const Page = () => {
                         >
                           <span className="rounded-[4px] bg-[#009A49] flex items-center justify- border-[1.4px] border-white h-[18px] 
                           w-[18px] mt-0.5">
-                            <img
+                            <Image
                               src="/pricing/tick.svg"
+                              alt=""
                               aria-hidden="true"
                               className="h-4 w-4"
                             />

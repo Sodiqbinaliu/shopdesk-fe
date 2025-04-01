@@ -17,7 +17,7 @@ interface EditImageProps {
 export default function EditImage({
   itemName,
   existingImages,
-  onDeleteImage,
+  // onDeleteImage,
   onSave,
   onCancel,
   isOpen,

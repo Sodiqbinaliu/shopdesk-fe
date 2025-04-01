@@ -23,11 +23,7 @@ export default function EditPriceModal({
   onSave,
   openSuccessModal,
 }: EditPriceModalProps) {
-  if (!(isOpen && item)) {
-    return null; // Don't render if modal is closed or item is null
-  }
-
-  const [price, setPrice] = useState(item.buying_price);
+  const [price, setPrice] = useState(item?.buying_price ?? 0);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isCurrencyModalOpen, setCurrencyModalOpen] = useState(false);
@@ -35,9 +31,29 @@ export default function EditPriceModal({
   const sellingPriceDivRef = useRef<HTMLDivElement>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [selectedSellingCurrency, setSelectedSellingCurrency] = useState(
-    currencies.find((currency) => currency.code === item.currency_code) ||
+    currencies.find((currency) => currency.code === item?.currency_code) ||
       currencies[0]
   );
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
+        sellingPriceDivRef.current &&
+        !sellingPriceDivRef.current.contains(event.target as Node)
+      ) {
+        setCurrencyModalOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  if (!(isOpen && item)) {
+    return null; // Don't render if modal is closed or item is null
+  }
 
   const filteredCurrencies = currencies.filter((currency) =>
     currency.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -69,23 +85,6 @@ export default function EditPriceModal({
       }
     }
   };
-
-  // Close modal when outside of div is clicked
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        sellingPriceDivRef.current &&
-        !sellingPriceDivRef.current.contains(event.target as Node)
-      ) {
-        setCurrencyModalOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const toggleCurrencyModal = () => {
     setCurrencyModalOpen((prev) => !prev);
@@ -200,10 +199,12 @@ export default function EditPriceModal({
                         onClick={() => handleCurrencySelect(currency)}
                         onKeyDown={() => handleCurrencySelect(currency)}
                       >
-                        <img
+                        <Image
                           src={currency.flag}
                           alt={`${currency.name} Flag`}
                           className="w-8 h-8 rounded-full object-cover mr-3"
+                          width={32}
+                          height={32}
                         />
                         <div>
                           <p className="text-[14px] font-circular-normal">

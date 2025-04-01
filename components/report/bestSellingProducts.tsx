@@ -21,7 +21,7 @@ const BestSellingProducts = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [fetchProducts]);
 
   useEffect(() => {
     let filtered: Product[] = products;

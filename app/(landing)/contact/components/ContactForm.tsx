@@ -11,7 +11,7 @@ export const ContactForm = () => {
     null
   );
   const formRef = useRef<HTMLFormElement>(null);
-  const phoneRef = useRef<HTMLInputElement>(null);
+  // const phoneRef = useRef<HTMLInputElement>(null);
   const [phoneNumber, setPhoneNumber] = useState("");
 
   const onPhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {

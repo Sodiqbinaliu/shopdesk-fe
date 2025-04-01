@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { refreshAccessToken } from "@/lib/refresh";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   const apiUrl = "https://api.timbu.cloud/organizations";
   let accessToken = (await cookies()).get("access_token")?.value;
   if (!accessToken) {

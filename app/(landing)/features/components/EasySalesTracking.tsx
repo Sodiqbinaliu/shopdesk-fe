@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+// import { Button } from "@/components/ui/button";
+// import { Checkbox } from "@/components/ui/checkbox";
 import Image from "next/image";
 
 const EasySalesTracking = () => {
@@ -35,7 +35,7 @@ const EasySalesTracking = () => {
       >
         {/* Icon */}
         <div data-aos="fade-up" data-aos-delay="100">
-          <img 
+          <Image 
             src="/features-images/salesIcon.svg" 
             alt="features icon" 
             className="w-12 h-12"
@@ -70,7 +70,7 @@ const EasySalesTracking = () => {
                 data-aos="fade-up"
                 data-aos-delay={250 + (index * 50)}
               >
-                <img 
+                <Image
                   src="/features-images/checkIcon.svg" 
                   alt="checked icon" 
                   className="mt-1 flex-shrink-0 w-5 h-5"
@@ -90,7 +90,7 @@ const EasySalesTracking = () => {
             className="text-gray-900 text-base font-semibold hover:underline inline-flex items-center transition-all duration-300 hover:text-green-600"
           >
             Get Access To Sales Insights
-            <img 
+            <Image 
               src="/features-images/arrow-right.svg" 
               alt="arrow right" 
               className="ml-3 w-3 h-3 transition-transform duration-300 group-hover:translate-x-1"

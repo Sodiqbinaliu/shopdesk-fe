@@ -1,6 +1,6 @@
 "use client";
 
-import type { Row } from "@tanstack/react-table";
+// import type { Row } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -13,13 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-interface DataTableRowActionsProps<TData> {
-  row: Row<TData>;
-}
-
-export function DataTableRowActions<TData>({
-  row,
-}: DataTableRowActionsProps<TData>) {
+export function DataTableRowActions() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="mx-auto">

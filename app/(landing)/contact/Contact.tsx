@@ -22,7 +22,7 @@ const Contact = () => {
       <ContactHeader
         title={
           <p>
-            We'd <span className="text-green-500">Love</span> to hear from you
+            We&apos;d <span className="text-green-500">Love</span> to hear from you
           </p>
         }
         subtitle="Have questions or need assistance? Reach out to us, and we will be happy to help."

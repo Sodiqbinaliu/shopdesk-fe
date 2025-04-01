@@ -19,7 +19,7 @@ interface DeleteItemProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   triggerElement?: React.ReactNode;
-  onDelete: (itemId: string) => void;
+  onDelete: (itemId: string | undefined) => Promise<void>;
   selectedItem?: { product_id: string };
 }
 

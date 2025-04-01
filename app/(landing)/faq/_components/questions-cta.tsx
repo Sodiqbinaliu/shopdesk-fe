@@ -9,7 +9,7 @@ function QuestionsCTA() {
         Still have questions?
       </h2>
       <p className="text-[#667085] text-lg">
-        Can't find the answer you're looking for? Please chat to our friendly
+        Can&apos;t find the answer you&apos;re looking for? Please chat to our friendly
         team.
       </p>
       <Button className="rounded-[9px] h-[48px] max-w-[124px] w-full cursor-pointer">

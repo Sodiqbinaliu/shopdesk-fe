@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 interface FeaturesProps {
   text: string;
 }
@@ -77,10 +79,11 @@ const Features = ({ text }: FeaturesProps) => {
                   className="flex items-center justify-center h-[48px] w-[48px] rounded-[8px]"
                   style={{ backgroundColor: content.bgColor }}
                 >
-                  <img
+                  <Image
                     src={content.imageSource}
                     alt="icon"
-                    className="h-[24px] w-[24px]"
+                    width={24}
+                    height={24}
                   />
                 </div>
 

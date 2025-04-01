@@ -1,7 +1,7 @@
 "use client";
 import type { StockItem } from "@/types/stocks";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaMinus, FaPlus, FaTimes } from "react-icons/fa";
 import { toast } from "sonner";
 import { editQuantity } from "@/services/stock";
@@ -21,13 +21,19 @@ export default function EditQuantityModal({
   onSave,
   openSuccessModal,
 }: EditQuantityModalProps) {
+  const [quantity, setQuantity] = useState(0);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (item) {
+      setQuantity(item.quantity);
+    }
+  }, [item]);
+
   if (!(isOpen && item)) {
     return null; // Don't render if modal is closed or item is null
   }
-
-  const [quantity, setQuantity] = useState(item.quantity);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isLoading, setIsLoading] = useState(false);
 
   const increment = () => setQuantity((prev) => prev + 1);
   const decrement = () => setQuantity((prev) => (prev > 0 ? prev - 1 : 0));

@@ -21,13 +21,14 @@ export default function EditStockName({
   onSave,
   openSuccessModal,
 }: EditStockNameProps) {
+   const [productName, setProductName] = useState(item?.name ?? "");
+  // const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isLoading, setIsLoading] = useState(false);
   if (!(isOpen && item)) {
     return null; // Don't render if modal is closed or item is null
   }
 
-  const [productName, setProductName] = useState(item.name);
-  // const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isLoading, setIsLoading] = useState(false);
+
 
   const isFormValid = () => {
     return productName;

@@ -4,7 +4,7 @@ import Logo from "@/components/functional/logo";
 import Cube from "@/public/auth/cube.svg";
 import Illustration from "@/public/auth/illustration.svg";
 import { authenticationSuccess } from "@/redux/features/auth/auth.slice";
-import { useStore } from "@/store/useStore";
+// import { useStore } from "@/store/useStore";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -27,7 +27,7 @@ function SignInContent() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [touched, setTouched] = useState({ email: false, password: false });
-  const { setOrganizationId, setOrganizationName } = useStore();
+  // const { setOrganizationId, setOrganizationName } = useStore();
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -339,7 +339,7 @@ function SignInContent() {
                 className="text-center text-xs text-gray-600"
                 variants={itemVariants}
               >
-                Don't have an account?{" "}
+                Don&apos;t have an account?{" "}
                 <a href="/sign-up" className="text-[#009A49] hover:underline">
                   Sign up
                 </a>

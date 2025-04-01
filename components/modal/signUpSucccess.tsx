@@ -14,11 +14,11 @@ interface SignUpSuccess {
 
 export default function SignUpSuccess ({
   isOpen,
-  onClose,
+  // onClose,
   email,
 }: SignUpSuccess) {
-  if (isOpen === false) return null
-  const router = useRouter()
+  const router = useRouter();
+  if (isOpen === false) return null;
 
   const handleRouting = () => {
     router.push('/stock')

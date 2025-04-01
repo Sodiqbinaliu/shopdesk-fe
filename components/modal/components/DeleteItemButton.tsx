@@ -10,7 +10,7 @@ const DeleteItemButton = ({
 }: {
   itemId: string | undefined;
   className?: string;
-  externalFunction: Function;
+  externalFunction: (id: string | undefined) => Promise<void>;
 }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);

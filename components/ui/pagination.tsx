@@ -4,8 +4,6 @@ import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ButtonProps, buttonVariants } from "@/components/ui/button";
 
-
-
 const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => (
   <nav
     role="navigation"
@@ -77,15 +75,12 @@ const PaginationPrevious = ({
 );
 PaginationPrevious.displayName = "PaginationPrevious";
 
-interface PaginationNextProps extends React.ComponentProps<typeof PaginationLink> {
-  pageNum: number;
-}
+type PaginationNextProps = React.ComponentProps<typeof PaginationLink>;
 
 const PaginationNext = ({
   className,
-  pageNum,
   ...props
-}:PaginationNextProps) => (
+}: PaginationNextProps) => (
   <PaginationLink
     aria-label="Go to next page"
     size="default"
@@ -94,8 +89,6 @@ const PaginationNext = ({
   >
       <span>Next</span>
       <ChevronRight className="h-4 w-4" />
-
-    
   </PaginationLink>
 );
 PaginationNext.displayName = "PaginationNext";

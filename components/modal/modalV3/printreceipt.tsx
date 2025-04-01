@@ -1,6 +1,6 @@
 import Image from "next/image";
-import { FaTimes, FaMinus, FaPlus, FaChevronDown } from "react-icons/fa";
-import { useState } from "react";
+import { FaTimes } from "react-icons/fa";
+// import { useState } from "react";
 
 interface PrintReceiptProps {
   isOpen: boolean;
@@ -8,12 +8,12 @@ interface PrintReceiptProps {
 }
 
 export default function PrintReceipt({ isOpen, onClose }: PrintReceiptProps) {
-  const [showCountrySelect, setShowCountrySelect] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState({
-    code: "+234",
-    flag: "🇳🇬",
-    name: "Nigeria",
-  });
+  // const [showCountrySelect, setShowCountrySelect] = useState(false);
+  // const [selectedCountry, setSelectedCountry] = useState({
+  //   code: "+234",
+  //   flag: "🇳🇬",
+  //   name: "Nigeria",
+  // });
 
   if (!isOpen) return null;
 

@@ -170,9 +170,11 @@ const CountryPhoneInput: React.FC<CountryPhoneInputProps> = ({
                   className="flex items-center p-2 hover:bg-gray-200 cursor-pointer border-b-1 px-2"
                   onClick={() => handleCountrySelect(country)}
                 >
-                  <img
+                  <Image
                     src={country.flag}
                     alt={`${country.name} Flag`}
+                    width={32}
+                    height={32}
                     className="w-8 h-8 rounded-full object-cover mr-3"
                   />
                   <div>

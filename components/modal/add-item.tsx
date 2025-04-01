@@ -36,14 +36,6 @@ import { FaMinus, FaPlus } from "react-icons/fa";
 import { toast } from "sonner";
 import { z } from "zod";
 
-interface StockResponse {
-  id: string;
-  name: string;
-  buying_price: number;
-  quantity: number;
-  currency_code: string;
-  date_created: string;
-}
 
 const formSchema = z.object({
   name: z.string().min(1, "Product name is required"),
@@ -115,9 +107,9 @@ function AddStockModal({ isOpen, onOpenChange }: AddStockModalProps) {
         createPrice(priceRequest)
           .unwrap()
           .catch((error) => console.error(error));
-        addStock(request)
+          addStock(request)
           .unwrap()
-          .then((response) => {
+          .then(() => {
             toast.success("Stock added successfully");
             onOpenChange(false);
           })
@@ -204,15 +196,15 @@ function AddStockModal({ isOpen, onOpenChange }: AddStockModalProps) {
                               <SelectTrigger className="border-none pr-0 shadow-none">
                                 {field.value ? (
                                   <div className="flex items-center">
-                                    <img
-                                      src={
-                                        currencies.find(
-                                          (c) => c.code === field.value
-                                        )?.flag
-                                      }
-                                      alt={`${field.value} Flag`}
-                                      className="w-6 h-6 rounded-full object-cover mr-2"
-                                    />
+<Image
+  src={
+    currencies.find((c) => c.code === field.value)?.flag || "/default-flag.svg"
+  }
+  alt={`${field.value} Flag`}
+  className="w-6 h-6 rounded-full object-cover mr-2"
+  width={24}
+  height={24}
+/>
                                     <span>
                                       {
                                         currencies.find(
@@ -252,7 +244,7 @@ function AddStockModal({ isOpen, onOpenChange }: AddStockModalProps) {
                                     value={currency.code}
                                   >
                                     <div className="flex items-center">
-                                      <img
+                                      <Image
                                         src={currency.flag}
                                         alt={`${currency.name} Flag`}
                                         className="w-6 h-6 rounded-full object-cover mr-3"
@@ -314,15 +306,15 @@ function AddStockModal({ isOpen, onOpenChange }: AddStockModalProps) {
                               <SelectTrigger className="border-none pr-0 shadow-none">
                                 {field.value ? (
                                   <div className="flex items-center">
-                                    <img
-                                      src={
-                                        currencies.find(
-                                          (c) => c.code === field.value
-                                        )?.flag
-                                      }
-                                      alt={`${field.value} Flag`}
-                                      className="w-6 h-6 rounded-full object-cover mr-2"
-                                    />
+<Image
+    src={
+      currencies.find((c) => c.code === field.value)?.flag || "/default-flag.svg"
+    }
+    alt={`${field.value} Flag`}
+    className="w-6 h-6 rounded-full object-cover mr-2"
+    width={24}
+    height={24}
+  />
                                     <span>
                                       {
                                         currencies.find(
@@ -362,7 +354,7 @@ function AddStockModal({ isOpen, onOpenChange }: AddStockModalProps) {
                                     value={currency.code}
                                   >
                                     <div className="flex items-center">
-                                      <img
+                                      <Image
                                         src={currency.flag}
                                         alt={`${currency.name} Flag`}
                                         className="w-6 h-6 rounded-full object-cover mr-3"

@@ -2,8 +2,9 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Features } from "@/components/shared/features";
+// import { Features } from "@/components/shared/features";
 import Link from "next/link";
+import Image from "next/image";
 import {priceCardContent, PriceCardContentOptions} from './PriceCardOption'
 
 const Pricing = () => {
@@ -100,7 +101,7 @@ const Pricing = () => {
                           />
                         </svg>
                       ) : (
-                        <img 
+                        <Image
                           src="/pricing/checkbox.svg" 
                           alt="checkbox" 
                           className="h-5 w-5"

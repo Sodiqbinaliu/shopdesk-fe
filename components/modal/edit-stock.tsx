@@ -40,9 +40,7 @@ export default function EditItemModal({
   item,
   onSave,
 }: EditItemModal) {
-  if (!(isOpen && item)) {
-    return null; // Don't render if modal is closed or item is null
-  }
+ 
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isCurrencyModalOpen, setCurrencyModalOpen] = useState(false);
@@ -132,7 +130,6 @@ export default function EditItemModal({
     setCurrencyModalOpen(false);
   };
 
-  // Close modal when outside of div is clicked
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -148,10 +145,12 @@ export default function EditItemModal({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  if (!isOpen) {
-    return null;
+  
+  if (!(isOpen && item)) {
+    return null; // Don't render if modal is closed or item is null
   }
+
+  
 
   return (
     <div className="fixed inset-0 bg-[#24242433] bg-opacity-20 flex items-center justify-center p-4">
@@ -282,7 +281,7 @@ export default function EditItemModal({
                           onClick={() => handleCurrencySelect(currency)}
                           onKeyDown={() => handleCurrencySelect(currency)}
                         >
-                          <img
+                          <Image
                             src={currency.flag}
                             alt={`${currency.name} Flag`}
                             className="w-8 h-8 rounded-full object-cover mr-3"

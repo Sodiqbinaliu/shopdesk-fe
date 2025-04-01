@@ -1,5 +1,5 @@
 "use client";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -7,9 +7,9 @@ import React from "react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import Link from "next/link";
 
-export default function layout({ children }: { children: React.ReactNode }) {
-  const [searchText, setSearchText] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
+export default function Layout({ children }: { children: React.ReactNode }) {
+  const [, setSearchText] = useState("");
+  const [, setIsSearching] = useState(false);
   const pathname = usePathname();
   const slug = pathname.split("/").at(2);
   const tabs = [
@@ -79,11 +79,13 @@ export default function layout({ children }: { children: React.ReactNode }) {
                     type="text"
                     className="h-12 border xl:w-[315px] w-[200px] rounded-md focus:outline-2 focus:outline-[#009A49] px-10"
                     onChange={(event) => {
-                      setIsSearching(true);
-                      setSearchText(event.target.value);
-                      if (!event.target.value) {
+                      const value = event.target.value;
+                      if (value) {
+                        setIsSearching(true);
+                      } else {
                         setIsSearching(false);
                       }
+                      setSearchText(value);
                     }}
                     placeholder="Search settings"
                   />

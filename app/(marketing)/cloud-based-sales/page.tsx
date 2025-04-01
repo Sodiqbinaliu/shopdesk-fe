@@ -1,7 +1,7 @@
 "use client";
 import Footer from "@/components/functional/footer";
 import Header from "@/components/functional/header";
-import Testimonials from "@/components/functional/testimonials";
+// import Testimonials from "@/components/functional/testimonials";
 import { Features } from "./landFeatures";
 import airbnb from "@/public/home-images/airbnb.svg";
 import coinbase from "@/public/home-images/coinbase.svg";
@@ -12,13 +12,13 @@ import griffin from "@/public/home-images/griffin.svg";
 import helpscout from "@/public/home-images/helpscout.svg";
 import patreon from "@/public/home-images/patreon.svg";
 import plaid from "@/public/home-images/plaid.svg";
-import play from "@/public/coming-soon/Icon.svg";
+// import play from "@/public/coming-soon/Icon.svg";
 import Desktop2 from "@/public/icons/Frame.svg";
 import Check from "@/public/icons/check.png";
 import Desktopsm from "@/public/icons/desktopsm.png";
 import Play from "@/public/icons/play.png";
 import logo from "@/public/icons/logo.svg";
-import right from "@/public/icons/right.svg";
+// import right from "@/public/icons/right.svg";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import Image from "next/image";
@@ -40,25 +40,25 @@ export default function Home() {
   }, []);
 
 
-  const fadeLeft = {
-    hidden: { opacity: 0, x: 50 },
-    visible: { 
-      opacity: 1, 
-      x: 0,
-      transition: { duration: 0.8, ease: "easeInOut" }
-    }
+  // const fadeLeft = {
+  //   hidden: { opacity: 0, x: 50 },
+  //   visible: { 
+  //     opacity: 1, 
+  //     x: 0,
+  //     transition: { duration: 0.8, ease: "easeInOut" }
+  //   }
   
-  };
+  // };
 
 
-  const fadeUp = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.8, ease: "easeInOut" }
-    }
-  };
+  // const fadeUp = {
+  //   hidden: { opacity: 0, y: 50 },
+  //   visible: { 
+  //     opacity: 1, 
+  //     y: 0,
+  //     transition: { duration: 0.8, ease: "easeInOut" }
+  //   }
+  // };
 
   const fadeRight = {
     hidden: { opacity: 0, x: -50 },
@@ -77,42 +77,7 @@ export default function Home() {
       transition: { duration: 0.8, ease: "easeInOut" }
     }
   };
-  interface FeatureCardProps {
-    iconSrc: string;
-    title: string;
-    description: string;
-    buttonText: string;
-    bgColor: string;
-  }
 
-  const FeatureCard: React.FC<FeatureCardProps> = ({
-    iconSrc,
-    title,
-    description,
-    buttonText,
-    bgColor,
-  }) => (
-    <div
-      className={`rounded-[20px] flex flex-1 min-w-[300px] max-w-[400px] flex-col justify-between gap-5 items-start p-4 ${bgColor}`}
-      data-aos="fade-up"
-      data-aos-delay="100"
-      data-aos-once="false" // Allow this element to re-animate
-    >
-      <img src={iconSrc} alt={title} className="w-8 h-8 mb-4 mt-2.5" />
-      <h3 className="text-2xl leading-6 font-medium text-gray-900">{title}</h3>
-      <p className="text-gray-700 text-lg leading-6">{description}</p>
-      <div className="flex items-center gap-2">
-        <button className="w-full text-green-600 cursor-pointer font-medium flex items-center text-left md:text-base text-sm ">
-          {buttonText}
-        </button>
-        <Image
-          src={right}
-          alt="Arrow Right"
-          className="w-3.5 h-3.5 cursor-pointer"
-        />
-      </div>
-    </div>
-  );
 
   const ShopDeskFeatures: React.FC = () => {
 
@@ -389,7 +354,7 @@ export default function Home() {
                     height={16}
                     className="mr-2"
                   />
-                  Free guide: "How to Manage Inventory & Boost Sales"
+                  Free guide: &quot;How to Manage Inventory & Boost Sales&quot;
                 </li>
               </ul>
             </div>
@@ -424,7 +389,7 @@ export default function Home() {
 
         <div className="bg-[#19A45B] text-white py-16 flex flex-col items-center text-center px-4 my-9">
           <span className="bg-[#0000001A] text-sm text-white px-4 py-2 rounded-full mb-4">
-            Get Early Access – Only <span className="text-black">50 Spots</span>{" "}
+            Get Early Access &ndash; Only <span className="text-black">50 Spots</span>{" "}
             Left!
           </span>
           <h2 className="text-2xl md:text-3xl font-semibold max-w-2xl">

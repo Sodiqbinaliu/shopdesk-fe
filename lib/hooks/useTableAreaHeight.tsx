@@ -19,7 +19,7 @@ const useTableAreaHeight = () => {
     return () => {
       window.removeEventListener('resize', updateHeight);
     };
-  }, []);
+  }, [tableAreaHeight]);
 
   return { tableAreaRef, tableAreaHeight };
 };

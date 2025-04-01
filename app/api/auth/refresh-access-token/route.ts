@@ -34,7 +34,7 @@ export async function GET() {
     }
 
     const data = await response.json();
-    const { access_token, refresh_token } = data;
+    const { access_token } = data;
     const isProduction = process.env.NODE_ENV === "production";
 
     // Set new access token cookie

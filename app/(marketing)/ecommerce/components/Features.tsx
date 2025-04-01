@@ -1,7 +1,7 @@
 import Image from 'next/image';
-import Link from 'next/link';
+// import Link from 'next/link';
 import React from 'react'
-import right from "@/public/icons/right.svg";
+// import right from "@/public/icons/right.svg";
 import { features } from '../utils';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
@@ -29,7 +29,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
     data-aos-delay="100"
     data-aos-once="false" 
   >
-    <img src={iconSrc} alt={title} className="w-12 h-12 mb-4 mt-2.5" />
+    <Image src={iconSrc} alt={title} className="w-12 h-12 mb-4 mt-2.5" />
     <h3 className="text-[20px] leading-6 font-medium text-[#2A2A2A] text-center">{title}</h3>
     <ul className="text-[#717171 font-circular-light space-y-[10px]">
       <li>{list1}</li>
