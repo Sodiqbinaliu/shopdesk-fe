@@ -113,23 +113,38 @@ export async function createOrg(orgData: {
   }
 }
 
-// export async function loginUser(email: string, password: string) {
-//   try {
-//     const response = await fetch('https://api.timbu.cloud/auth/login', {
-//       method: 'POST',
-//       headers: {
-//         Accept: 'application/json',
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify({ email, password }),
-//     });
-//     const data = await response.json();
-//     if (!response.ok) {
-//       throw new Error(data.message || 'Login failed');
-//     }
-//     return data;
-//   } catch (error) {
-//     console.error('Login error:', error);
-//     throw error;
-//   }
-// }
+export const uploadImage = async (file: File) => {
+  const token = await getAccessToken();
+  const url = "https://api.timbu.cloud/users/image/upload";
+  const formData = new FormData();
+  formData.append("file", file);
+
+  for (const pair of formData.entries()) {
+    console.log(pair[0], pair[1]);
+  }
+
+  try {
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+console.log(response,'sffsdfdfdfsdfs')
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Error ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log(data,response)
+    console.log("Upload successful:", data);
+    return data;
+  } catch (error) {
+    console.error("Upload failed:", error);
+  }
+};
+
+

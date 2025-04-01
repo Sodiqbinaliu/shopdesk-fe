@@ -1,10 +1,38 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import profilePhoto from "@/public/Avatar.svg";
 import { Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import React, { useState } from "react";
+import { uploadImage } from "@/services/auth";
 
 function Account() {
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (file) {
+      setSelectedFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      console.error("No file selected");
+      return;
+    }
+    const response = await uploadImage(selectedFile);
+    console.log("Upload response:", response);
+  };
+
   return (
     <>
       <div>
@@ -24,7 +52,10 @@ function Account() {
             >
               Cancel
             </Button>
-            <Button className=" px-6 py-3 text-base cursor-pointer">
+            <Button
+              onClick={handleUpload}
+              className=" px-6 py-3 text-base cursor-pointer"
+            >
               Save
             </Button>
           </div>
@@ -40,17 +71,36 @@ function Account() {
 
           <div className="flex flex-col gap-5 items-center max-w-[742px]">
             <Image
-              src={profilePhoto}
+              // src={profilePhoto}
+              width={100}
+              height={100}
+              src={imagePreview ? imagePreview : profilePhoto}
               alt="profile"
-              className="w-[100px] h-[100px] rounded-full"
+              className="w-[100px] h-[100px] object-center object-cover rounded-full"
             />
+
             <Button
+              id="changePhotoBtn"
               variant="outline"
               className="py-3 px-6 rounded-[12px] bg-white border border-[#1b1b1b] text-[#1b1b1b]"
+              onClick={() => {
+                const fileInput = document.getElementById(
+                  "fileInput"
+                ) as HTMLInputElement;
+                fileInput?.click();
+              }}
             >
               <Plus className="w-6 h-6" />
               Change Photo
             </Button>
+
+            <Input
+              type="file"
+              id="fileInput"
+              accept="image/*"
+              className="hidden"
+              onChange={handleFileChange}
+            />
           </div>
         </div>
         <div className="flex-col flex ">
