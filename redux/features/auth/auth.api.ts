@@ -39,6 +39,27 @@ import type { UserType } from '@/types/user';
 //   invalidatesTags: ["User"],
 // }),
 
+interface Organization {
+  id: string;
+  name: string;
+  mission: string;
+  initials: string;
+  currency_code: string;
+  business_type: string;
+  tagline: string;
+  slug: string;
+  image_url: string;
+  is_deleted: boolean;
+  date_created: string;
+  last_updated: string;
+  date_created_db: string;
+  last_updated_db: string;
+}
+
+export interface OrganizationResponse {
+  data: Organization[];
+}
+
 export const authApi = api.injectEndpoints({
   endpoints: (builder) => ({
     // TODO: all your endpoints must be typed
@@ -142,6 +163,10 @@ export const authApi = api.injectEndpoints({
       query: () => 'auth/user',
       providesTags: ['User'],
     }),
+    getOrganizations: builder.query<OrganizationResponse, void>({
+      query: () => "organization",
+      providesTags: ["OrganizationImage"],
+    }),
     // editUser: builder.mutation({
     //   query: (updatedData) => ({
     //     url: 'auth/user',
@@ -170,6 +195,7 @@ export const {
   useSignupMutation,
   useGetUserQuery,
   useCreateOrgMutation,
+  useGetOrganizationsQuery,
   // useEditUserMutation,
   // useChangePasswordMutation,
   // useVerifyOtpMutation,

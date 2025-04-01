@@ -5,8 +5,8 @@ type Organization = {
 
 export async function getOrganization(): Promise<Organization[] | null> {
   try {
-    const response = await fetch('api/organization', {
-      method: 'GET',
+    const response = await fetch("/api/organization", {
+      method: "GET",
       headers: {
         Accept: 'application/json',
       },

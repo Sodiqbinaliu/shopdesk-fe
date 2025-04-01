@@ -1,8 +1,9 @@
-import { Button } from '@/components/ui/button';
-import Image from 'next/image';
-import LogoPhoto from '@/public/modal-images/Logo-Wrapper.png';
-import { Plus } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import LogoPhoto from "@/public/modal-images/Logo-Wrapper.png";
+import { Plus } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import BusinessImage from "./BusinessImage";
 
 function Buisness() {
   return (
@@ -38,21 +39,7 @@ function Buisness() {
               displaced
             </p>
           </div>
-
-          <div className='flex flex-col gap-5 items-start w-full'>
-            <Image
-              src={LogoPhoto}
-              alt='profile'
-              className='w-[full] h-[49px] '
-            />
-            <Button
-              variant='outline'
-              className='py-3 px-6 rounded-[12px] bg-white border border-[#1b1b1b] text-[#1b1b1b]'
-            >
-              <Plus className='w-6 h-6' />
-              Change Photo
-            </Button>
-          </div>
+          <BusinessImage />
         </div>
         <div className='flex-col flex '>
           <div className='flex flex-col w-full items-center justify-start gap-4  md:border-b border-[#e9eaeb] pb-6 mt-6'>
