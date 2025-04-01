@@ -1,4 +1,4 @@
-import { api } from '@/redux/api';
+import { api } from "@/redux/api";
 
 export interface ProductSold {
   product_id: string;
@@ -90,6 +90,14 @@ export interface GetSalesResponse {
   items: Sale[];
 }
 
+export interface WeeklySalesResponse {
+  data: Record<string, Record<string, number | null> | null>;
+}
+
+export interface ProfitResponse {
+  data: Record<string, number | null>;
+}
+
 export const salesApi = api.injectEndpoints({
   endpoints: (builder) => ({
     createSale: builder.mutation<CreateSaleResponse, CreateSaleRequest>({
@@ -100,10 +108,10 @@ export const salesApi = api.injectEndpoints({
         products_sold,
       }) => ({
         url: `sales`,
-        method: 'POST',
+        method: "POST",
         body: { organization_id, customer_id, currency_code, products_sold },
       }),
-      invalidatesTags: ['Sale'],
+      invalidatesTags: ["Sale"],
     }),
     getSales: builder.query<
       GetSalesResponse,
@@ -124,14 +132,14 @@ export const salesApi = api.injectEndpoints({
         date_time,
         page = 1,
         size = 50,
-        filter = 'all',
+        filter = "all",
         my_sales = false,
-        sorting_key = 'date_created_db',
+        sorting_key = "date_created_db",
         reverse_sort = true,
         use_db = true,
       }) => ({
         url: `sales`,
-        method: 'GET',
+        method: "GET",
         params: {
           organization_id,
           date_time,
@@ -144,7 +152,7 @@ export const salesApi = api.injectEndpoints({
           use_db,
         },
       }),
-      providesTags: ['Sale'],
+      providesTags: ["Sale"],
       transformResponse: (response: GetSalesResponse, meta, arg) => {
         const { reverse_sort = true } = arg;
         const sortedItems = response.items.sort((a, b) => {
@@ -156,7 +164,34 @@ export const salesApi = api.injectEndpoints({
         return { ...response, items: sortedItems };
       },
     }),
+    getSalesThisWeek: builder.query<
+      WeeklySalesResponse,
+      { organization_id: string }
+    >({
+      query: ({ organization_id }) => ({
+        url: `sales/weekday-count`,
+        method: "POST",
+        body: { organization_id },
+      }),
+      providesTags: ["Stock"],
+    }),
+    getProfitsOfStocks: builder.query<
+      ProfitResponse,
+      { organization_id: string }
+    >({
+      query: ({ organization_id }) => ({
+        url: `sales/profit`,
+        method: "POST",
+        body: { organization_id },
+      }),
+      providesTags: ["Stock"],
+    }),
   }),
 });
 
-export const { useCreateSaleMutation, useGetSalesQuery } = salesApi;
+export const {
+  useCreateSaleMutation,
+  useGetSalesQuery,
+  useGetSalesThisWeekQuery,
+  useGetProfitsOfStocksQuery,
+} = salesApi;
