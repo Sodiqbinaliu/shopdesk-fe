@@ -8,7 +8,6 @@ export async function GET() {
   if (!accessToken) {
     accessToken = await refreshAccessToken();
   }
-  console.log(accessToken);
   try {
     const response = await fetch(apiUrl, {
       method: 'GET',

@@ -39,6 +39,7 @@ export async function PATCH(request: NextRequest) {
       { status: 400 }
     );
   const body = await request.formData();
+  console.log(body)
   try {
     const response = await fetch(
       `${apiUrl}/${organization_id}/update-image?organization_id=${organization_id}`,

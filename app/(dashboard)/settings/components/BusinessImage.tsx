@@ -25,6 +25,7 @@ export default function BusinessImage() {
   const [updateImage, { isLoading: updateLoading }] =
     useUpdateOrganizationImageMutation();
   const handleUpdateImage = async (form: FormData) => {
+    console.log(form);
     try {
       await updateImage({
         organization_id: organizationId,

@@ -114,6 +114,7 @@ export default function SalesPage() {
     manualPagination: true,
     pageCount: Math.ceil((formattedSales?.length || 0) / 5),
   });
+  console.log(table);
 
   const handleRowHover = (tableId: string, rowId: string) => {
     setHoveredRow({ tableId, rowId });
