@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import type { ColumnDef } from "@tanstack/react-table";
-import { DataTableColumnHeader } from "./data-table-column-header";
+import type { ColumnDef } from '@tanstack/react-table';
+import { DataTableColumnHeader } from './data-table-column-header';
 
 export type Sale = {
   id: string;
@@ -16,45 +16,45 @@ export type Sale = {
 
 export const columns: ColumnDef<Sale>[] = [
   {
-    accessorKey: "itemName",
+    accessorKey: 'itemName',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="ITEM NAME" />
+      <DataTableColumnHeader column={column} title='ITEM NAME' />
     ),
     cell: ({ row }) => {
-      const isTotal = row.original.itemName === "Total";
+      const isTotal = row.original.itemName === 'Total';
 
       if (row.original.isSpacer) {
-        return <div className="h-4" />;
+        return <div className='h-4' />;
       }
 
       if (isTotal) {
         return (
-          <div className="flex justify-between items-center relative h-11 overflow-y-hidden">
-            <div className="text-sm text-gray-600 px-5 h-full border-t-0 border-l-0 rounded-tr-[0.625rem] rounded-tl-[0.625rem] border-[#DEE5ED] w-3/4 text-center flex justify-center items-center border-solid border-b-0 border">
-              {row.original.date} <span className="text-[#DEE5ED] mx-3">|</span>{" "}
+          <div className='flex justify-between items-center relative h-11 overflow-y-hidden'>
+            <div className='text-sm text-gray-600 px-5 h-full border-t-0 border-l-0 rounded-tr-[0.625rem] rounded-tl-[0.625rem] border-[#DEE5ED] w-3/4 text-center flex justify-center items-center border-solid border-b-0 border'>
+              {row.original.date} <span className='text-[#DEE5ED] mx-3'>|</span>{' '}
               {row.original.time}
             </div>
-            <div className="font-semibold px-5 flex items-center">Total</div>
+            <div className='font-semibold px-5 flex items-center'>Total</div>
           </div>
         );
       }
 
       return (
-        <p className="border-none px-5 py-3 rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:z-10 relative">
+        <p className='border-none px-5 py-3 rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:z-10 relative'>
           {row.original.itemName}
         </p>
       );
     },
   },
   {
-    accessorKey: "quantitySold",
+    accessorKey: 'quantitySold',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="QUANTITY SOLD" />
+      <DataTableColumnHeader column={column} title='QUANTITY SOLD' />
     ),
     cell: ({ row }) => {
       return (
-        <div className="w-full h-11">
-          <p className="border-none px-5 py-3 rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative">
+        <div className='w-full h-11'>
+          <p className='border-none px-5 py-3 rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative'>
             {row.original.quantitySold}
           </p>
         </div>
@@ -62,31 +62,39 @@ export const columns: ColumnDef<Sale>[] = [
     },
   },
   {
-    accessorKey: "sellPrice",
+    accessorKey: 'sellPrice',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="SELL. PRICE" />
+      <DataTableColumnHeader
+        column={column}
+        title='SELL. PRICE'
+        className='border-t group relative before:absolute before:top-0 before: before:-left-36/100 before:w-36/100 before:h-full before:content-[""] before:bg-transparent before:border-t-10 before:-translate-y-2.5 before:border-solid before:border-gray-200 before:cursor-pointer'
+      />
     ),
     cell: ({ row }) => (
-      <div className="w-full h-11">
-        <p className="border-none px-5 py-3 rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative">
+      <div className='w-full h-11'>
+        <p className='border-none px-5 py-3 rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative'>
           {row.original.sellPrice}
         </p>
       </div>
     ),
   },
   {
-    accessorKey: "profit",
+    accessorKey: 'profit',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="SHOW PROFIT" />
+      <DataTableColumnHeader
+        column={column}
+        title='SHOW PROFIT'
+        className='border-t rounded-tr-lg'
+      />
     ),
     cell: ({ row }) => (
-      <div className="w-full text-right h-11">
-        {row.getValue("profit") ? (
-          <p className="border-none px-5 py-3 rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative text-left">
+      <div className='w-full text-right h-11'>
+        {row.getValue('profit') ? (
+          <p className='border-none px-5 py-3 rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative text-left'>
             {row.original.profit}
           </p>
         ) : (
-          <p className="border-none px-5 py-3 rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative text-left">
+          <p className='border-none px-5 py-3 rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative text-left'>
             {0}
           </p>
         )}
