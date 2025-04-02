@@ -33,7 +33,6 @@ export async function GET() {
   }
 }
 
-
 export async function PUT(req: Request) {
   let accessToken = (await cookies()).get("access_token")?.value;
   if (!accessToken) {
@@ -50,7 +49,7 @@ export async function PUT(req: Request) {
     }
 
     const apiUrl = `https://api.timbu.cloud/users/profile/update`;
-console.log(updatedData)
+    console.log(updatedData);
     const response = await fetch(apiUrl, {
       method: "PUT",
       headers: {
@@ -84,20 +83,18 @@ export async function PATCH(req: Request) {
   if (!accessToken) {
     accessToken = await refreshAccessToken();
   }
+  const body = await req.formData();
   try {
-       const { id, ...updatedData } = await req.json(); 
-    const response = await fetch(
-      `https://api.timbu.cloud/users/image/upload`,
-      {
-        method: "PATCH",
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(updatedData),
-      }
-    );
+    const response = await fetch(`https://api.timbu.cloud/users/image/upload`, {
+      method: "PATCH",
+      headers: {
+        'Accept': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body,
+    });
     const data = await response.json();
+    console.log(data);
     return NextResponse.json(data);
   } catch (error) {
     return NextResponse.json(
@@ -108,5 +105,3 @@ export async function PATCH(req: Request) {
     );
   }
 }
-
-

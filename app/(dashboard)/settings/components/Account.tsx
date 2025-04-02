@@ -2,20 +2,19 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import profilePhoto from "@/public/Avatar.svg";
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import React, { useEffect, useState } from "react";
-import { uploadImage } from "@/services/auth";
+import React, { useEffect, useRef, useState } from "react";
 import {
   useEditUserImageMutation,
   useEditUserMutation,
   useGetUserQuery,
 } from "@/redux/features/auth/auth.api";
+import { toast } from "sonner";
 
 function Account() {
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { data, isLoading } = useGetUserQuery();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [firstName, setFirstName] = useState(data?.first_name || "");
   const [lastName, setLastName] = useState(data?.last_name || "");
   const [email, setEmail] = useState(data?.email || "");
@@ -26,69 +25,53 @@ function Account() {
     function () {
       setFirstName(data?.first_name || "");
       setLastName(data?.last_name || "");
-      setEmail(data?.last_name || "");
+      setEmail(data?.email || "");
     },
     [!isLoading]
   );
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleButtonClick = () => {
+    fileInputRef.current?.click();
+  };
+  const handleUpdateImage = async (formData: FormData) => {
+    try {
+      await editUserImage({ formData }).unwrap();
+      toast.success("Profile photo updated successfully!");
+    } catch (error) {
+      toast.error("Failed to upload profile image.");
+    }
+  };
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
 
     if (file) {
-      setSelectedFile(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+      const form = new FormData();
+      form.append("file", file);
+
+      await handleUpdateImage(form);
     }
   };
-  // const handleUpload = async () => {
-  //   if (!selectedFile) {
-  //     console.error("No file selected");
-  //     return;
-  //   }
-  // };
-  // console.log(editUser);
   // console.log(data);
 
   const handleSubmit = async () => {
     if (!firstName || !lastName) return;
 
     try {
-      if (selectedFile) {
-        const response = await editUserImage({ image: selectedFile });
-        console.log("Upload response:", response);
-      }
-      if (!selectedFile) {
-        const response = await editUser({
-          id: data?.id || "",
-          first_name: firstName,
-          last_name: lastName,
-          email: "odionsamuel2005@gmail.com",
-        }).unwrap();
-        console.log("User updated successfully:", response);
-        alert("User updated successfully!");
-      }
-
-      if (selectedFile && (firstName || lastName)) {
-        const response = await Promise.all([
-          editUserImage({ image: selectedFile }),
-          editUser({
-            id: data?.id || "",
-            first_name: firstName,
-            last_name: lastName,
-            email: "odionsamuel2005@gmail.com",
-          }).unwrap(),
-        ]);
-        console.log("Upload response:", response);
-      }
+     await editUser({
+        id: data?.id || "",
+        first_name: firstName,
+        last_name: lastName,
+        email: "odionsamuel2005@gmail.com",
+      }).unwrap();
+      toast.success("User updated successfully!");
     } catch (err) {
-      console.error("Error updating user:", err);
-      alert("Failed to update user");
+      toast.success("Failed to update user!");
     }
   };
 
+  console.log(data);
   return (
     <>
       <div>
@@ -112,7 +95,18 @@ function Account() {
               onClick={handleSubmit}
               className=" px-6 py-3 text-base cursor-pointer"
             >
-              Save
+                {editLoading ? (
+                <>
+                  {" "}
+                  <Loader2 className="h-6 w-6 animate-spin text-gray-500" />
+                  Updating...
+                </>
+              ) : (
+                <>
+                   Save
+                </>
+              )}
+            
             </Button>
           </div>
         </div>
@@ -130,7 +124,11 @@ function Account() {
               // src={profilePhoto}
               width={100}
               height={100}
-              src={imagePreview ? imagePreview : profilePhoto}
+              src={
+                data?.image_url
+                  ? `https://api.timbu.cloud/images/${data.image_url}`
+                  : profilePhoto
+              }
               alt="profile"
               className="w-[100px] h-[100px] object-center object-cover rounded-full"
             />
@@ -139,15 +137,21 @@ function Account() {
               id="changePhotoBtn"
               variant="outline"
               className="py-3 px-6 rounded-[12px] bg-white border border-[#1b1b1b] text-[#1b1b1b]"
-              onClick={() => {
-                const fileInput = document.getElementById(
-                  "fileInput"
-                ) as HTMLInputElement;
-                fileInput?.click();
-              }}
+              onClick={handleButtonClick}
+ 
             >
-              <Plus className="w-6 h-6" />
-              Change Photo
+              {editImageLoading ? (
+                <>
+                  {" "}
+                  <Loader2 className="h-6 w-6 animate-spin text-gray-500" />
+                  Updating...
+                </>
+              ) : (
+                <>
+                  <Plus className="w-6 h-6" />
+                  Change Photo
+                </>
+              )}
             </Button>
 
             <Input
@@ -155,6 +159,7 @@ function Account() {
               id="fileInput"
               accept="image/*"
               className="hidden"
+              ref={fileInputRef}
               onChange={handleFileChange}
             />
           </div>

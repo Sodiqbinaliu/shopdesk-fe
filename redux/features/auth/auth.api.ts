@@ -181,12 +181,14 @@ export const authApi = api.injectEndpoints({
       invalidatesTags: ["User"],
     }),
 
-    editUserImage: builder.mutation<any, { image: File }>({
-      query: (updatedData) => ({
-        url: "auth/user", // Calls Next.js API route
-        method: "PATCH",
-        body: updatedData, // Includes userId in body
-      }),
+    editUserImage: builder.mutation<any, { formData: FormData }>({
+      query: ({ formData }) => {
+        return {
+          url: "auth/user",
+          method: "PATCH",
+          body: formData,
+        };
+      },
       invalidatesTags: ["User"],
     }),
   }),
