@@ -1,5 +1,6 @@
 import type { Sale } from "../components/columns";
 
+<<<<<<< HEAD
 export const sampleData = [
   {
     id: "3",
@@ -73,6 +74,37 @@ export function processDataIntoGroups(data: Sale[]) {
     acc[key].total.profit += item.profit || 0;
     return acc;
   }, {} as Record<string, { date: string; time: string; timeKey: string; items: Sale[]; total: Sale }>);
+=======
+export function processDataIntoGroups(data: Sale[]) {
+  // Group data by time without re-sorting
+  const groupedByTime = data.reduce(
+    (acc, item) => {
+      const key = `${item.date} ${item.time}`;
+      if (!acc[key]) {
+        acc[key] = {
+          timeKey: key,
+          items: [],
+          total: {
+            id: `total-${key}`,
+            date: item.date,
+            time: item.time,
+            itemName: 'Total',
+            quantitySold: 0,
+            sellPrice: 0,
+            profit: 0,
+          },
+        };
+      }
+      acc[key].items.push(item);
+      acc[key].total.quantitySold += item.quantitySold;
+      acc[key].total.sellPrice += item.sellPrice * item.quantitySold;
+      acc[key].total.profit += item.profit || 0;
+      return acc;
+    },
+    {} as Record<string, { timeKey: string; items: Sale[]; total: Sale }>
+  );
+>>>>>>> f526f85f0d2d5116ed4a3f26a97de101307ab875
 
+  // Convert to array and maintain order from the input data
   return Object.values(groupedByTime);
 }

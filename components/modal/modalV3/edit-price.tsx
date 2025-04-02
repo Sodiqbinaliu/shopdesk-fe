@@ -3,9 +3,10 @@ import Image from 'next/image';
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { FaChevronDown, FaSearch, FaTimes } from 'react-icons/fa';
-import { currencies } from '../add-item';
 import type { Currency, StockItem } from '@/types/stocks';
-//import { editPrice } from '@/services/stock'
+import { currencies } from '@/app/(auth)/create-organization/_components/CreateOrganization';
+import { editPrice } from '@/services/stock';
+import { toast } from 'sonner';
 
 interface EditPriceModalProps {
   isOpen: boolean;
@@ -19,12 +20,10 @@ export default function EditPriceModal({
   isOpen,
   onClose,
   item,
+  onSave,
+  openSuccessModal,
 }: EditPriceModalProps) {
-  if (!(isOpen && item)) {
-    return null; // Don't render if modal is closed or item is null
-  }
-
-  const [price, setPrice] = useState(item.buying_price);
+  const [price, setPrice] = useState(item?.buying_price ?? 0);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isCurrencyModalOpen, setCurrencyModalOpen] = useState(false);
@@ -32,25 +31,10 @@ export default function EditPriceModal({
   const sellingPriceDivRef = useRef<HTMLDivElement>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [selectedSellingCurrency, setSelectedSellingCurrency] = useState(
-    currencies.find((currency) => currency.code === item.currency_code) ||
+    currencies.find((currency) => currency.code === item?.currency_code) ||
       currencies[0]
   );
 
-  const filteredCurrencies = currencies.filter((currency) =>
-    currency.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const isFormValid = () => {
-    return price > 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    setIsLoading(true);
-  };
-
-  // Close modal when outside of div is clicked
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -66,6 +50,41 @@ export default function EditPriceModal({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  if (!(isOpen && item)) {
+    return null; // Don't render if modal is closed or item is null
+  }
+
+  const filteredCurrencies = currencies.filter((currency) =>
+    currency.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const isFormValid = () => {
+    return price > 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    if (isFormValid()) {
+      try {
+        await editPrice(item.id, {
+          buying_price: Number.parseFloat(`${price}`),
+          currency_code: selectedSellingCurrency.code,
+        });
+
+        onSave(Number.parseFloat(`${price}`));
+        openSuccessModal();
+        onClose();
+      } catch (error) {
+        console.error('Failed to update price:', error);
+        toast.error('Error updating price');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
 
   const toggleCurrencyModal = () => {
     setCurrencyModalOpen((prev) => !prev);
@@ -180,10 +199,12 @@ export default function EditPriceModal({
                         onClick={() => handleCurrencySelect(currency)}
                         onKeyDown={() => handleCurrencySelect(currency)}
                       >
-                        <img
+                        <Image
                           src={currency.flag}
                           alt={`${currency.name} Flag`}
                           className='w-8 h-8 rounded-full object-cover mr-3'
+                          width={32}
+                          height={32}
                         />
                         <div>
                           <p className='text-[14px] font-circular-normal'>

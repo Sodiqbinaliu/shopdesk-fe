@@ -39,6 +39,27 @@ import type { UserType } from "@/types/user";
 //   invalidatesTags: ["User"],
 // }),
 
+interface Organization {
+  id: string;
+  name: string;
+  mission: string;
+  initials: string;
+  currency_code: string;
+  business_type: string;
+  tagline: string;
+  slug: string;
+  image_url: string;
+  is_deleted: boolean;
+  date_created: string;
+  last_updated: string;
+  date_created_db: string;
+  last_updated_db: string;
+}
+
+export interface OrganizationResponse {
+  data: Organization[];
+}
+
 export const authApi = api.injectEndpoints({
   endpoints: (builder) => ({
     // TODO: all your endpoints must be typed
@@ -138,39 +159,68 @@ export const authApi = api.injectEndpoints({
     //     url: `/auth/resend-otp/?email=${email}`,
     //   }),
     // }),
+
     getUser: builder.query<UserType, void>({
       query: () => "auth/user",
       providesTags: ["User"],
     }),
-    // editUser: builder.mutation({
-    //   query: (updatedData) => ({
-    //     url: 'auth/user',
-    //     method: 'PATCH',
-    //     body: updatedData,
-    //   }),
-    //   invalidatesTags: ['User'],
-    // }),
-    // changePassword: builder.mutation({
-    //   query: ({ old_password, new_password }) => ({
-    //     url: 'auth/change-password/',
-    //     method: 'PATCH',
-    //     body: { old_password, new_password },
-    //   }),
-    // }),
+    getOrganizations: builder.query<OrganizationResponse, void>({
+      query: () => "organization",
+      providesTags: ["OrganizationImage"],
+    }),
 
-    // TODO: handle logout the correct way here
-    // logout: builder.mutation<void, void>({
+    editUser: builder.mutation<
+      any, // Replace with actual UserType if available
+      { id: string; email?: string; first_name?: string; last_name?: string }
+    >({
+      query: (updatedData) => ({
+        url: "auth/user", // Calls Next.js API route
+        method: "PUT",
+        body: updatedData, // Includes userId in body
+      }),
+      invalidatesTags: ["User"],
+    }),
 
-    // }),
+    editUserImage: builder.mutation<any, { image: File }>({
+      query: (updatedData) => ({
+        url: "auth/user", // Calls Next.js API route
+        method: "PATCH",
+        body: updatedData, // Includes userId in body
+      }),
+      invalidatesTags: ["User"],
+    }),
   }),
 });
+
+// editUser: builder.mutation({
+//   query: (updatedData) => ({
+//     url: 'auth/user',
+//     method: 'PATCH',
+//     body: updatedData,
+//   }),
+//   invalidatesTags: ['User'],
+// }),
+// changePassword: builder.mutation({
+//   query: ({ old_password, new_password }) => ({
+//     url: 'auth/change-password/',
+//     method: 'PATCH',
+//     body: { old_password, new_password },
+//   }),
+// }),
+
+// TODO: handle logout the correct way here
+// logout: builder.mutation<void, void>({
+
+// }),
 
 export const {
   useLoginMutation,
   useSignupMutation,
   useGetUserQuery,
   useCreateOrgMutation,
-  // useEditUserMutation,
+  useGetOrganizationsQuery,
+  useEditUserMutation,
+  useEditUserImageMutation,
   // useChangePasswordMutation,
   // useVerifyOtpMutation,
   // useLazyResendVerificationQuery,

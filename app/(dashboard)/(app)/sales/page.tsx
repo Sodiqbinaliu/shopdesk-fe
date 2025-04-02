@@ -1,115 +1,295 @@
-"use client";
-import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+/* eslint-disable react-hooks/exhaustive-deps */
+'use client';
+import SalesModal from '@/components/modal/salesmodal/sales-modal';
+import { Button } from '@/components/ui/button';
+// import { Icons } from "@/components/ui/icons";
+import { Table, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  useCreateCustomerMutation,
+  useGetCustomersQuery,
+} from '@/redux/features/customer/customer.api';
+import { useGetProductsForSaleQuery } from '@/redux/features/product/product.api';
+import {
+  clearCart,
+  updateSalesCountFromData,
+} from '@/redux/features/product/product.slice';
+import {
+  useCreateSaleMutation,
+  useGetSalesQuery,
+} from '@/redux/features/sale/sale.api';
+import { AppDispatch, RootState } from '@/redux/store';
+import { useStore } from '@/store/useStore';
+import { Product } from '@/types/product';
+import { formatDate } from '@/utils';
 import {
   type Column,
   getCoreRowModel,
   getPaginationRowModel,
   useReactTable,
-} from "@tanstack/react-table";
-import React, { useEffect, useState } from "react";
-import { columns, type Sale } from "./components/columns";
-import { DataTable } from "./components/data-table";
-import { DataTablePagination } from "./components/data-table-pagination";
-import { processDataIntoGroups, sampleData } from "./data/data";
+} from '@tanstack/react-table';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'sonner';
+import { columns, type Sale } from './components/columns';
+import { DataTable } from './components/data-table';
+import { DataTablePagination } from './components/data-table-pagination';
+import EmptySalePage from './components/empty-sale-page';
+import { processDataIntoGroups } from './data/data';
 
 export default function SalesPage() {
-  const [groupedData, setGroupedData] = useState<
-    {
-      date: string;
-      time: string;
-      timeKey: string;
-      items: Sale[];
-      total: Sale;
-    }[]
-  >([]);
-  const [viewType, setViewType] = React.useState<"Daily" | "Weekly" | "Flat">(
-    "Daily"
+  const [viewType, setViewType] = React.useState<'Daily' | 'Weekly' | 'Flat'>(
+    'Daily'
   );
-
-  useEffect(() => {
-    setGroupedData(processDataIntoGroups(sampleData));
-  }, []);
+  const [hoveredRow, setHoveredRow] = useState<{
+    tableId: string;
+    rowId: string;
+  } | null>(null);
+  const organizationId = useStore((state) => state.organizationId);
+  const [showModal, setShowModal] = useState(false);
 
   // Create a table instance for pagination
+
+  const { data: salesData } = useGetSalesQuery(
+    {
+      organization_id: organizationId,
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    }
+  );
+
+  const salesCount = salesData?.items.length;
+
+  const formattedSales = salesData?.items?.flatMap((sale) =>
+    sale.products_sold.map((product) => {
+      const { date, time } = formatDate(product.date_created);
+
+      return {
+        id: product.id,
+        date,
+        time,
+        itemName: product.product.name,
+        quantitySold: product.quantity,
+        sellPrice: product.amount,
+        profit: sale.profit,
+      };
+    })
+  );
+
+  const { data: ProductsData, isFetching: isFetchingProducts } =
+    useGetProductsForSaleQuery(
+      {
+        organization_id: organizationId,
+      },
+      {
+        refetchOnMountOrArgChange: true,
+      }
+    );
+  const { data: customersData, isFetching: isFetchingCustomers } =
+    useGetCustomersQuery(
+      {
+        organization_id: organizationId,
+      },
+      {
+        refetchOnMountOrArgChange: true,
+      }
+    );
+
+  const [createCustomer, { isLoading: isCreatingCustomer }] =
+    useCreateCustomerMutation();
+  const [createSale, { isLoading: isCreatingSale }] = useCreateSaleMutation();
+  const stockItems = ProductsData?.items ?? [];
+
   const table = useReactTable({
-    data: sampleData,
+    data: formattedSales || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 5,
+        pageIndex: 0,
+      },
+    },
+    manualPagination: true,
+    pageCount: Math.ceil((formattedSales?.length || 0) / 5),
   });
   console.log(table);
 
-  return (
-    <div className="w-full border rounded-tr-2xl border-[#E9EEF3]">
-      <div className="grid grid-cols-[1fr_0.7fr_0.7fr_0.7fr]">
-        <div className="flex   border-b border-[#E9EEF3] p-5 items-center justify-start">
-          ITEM NAME
-        </div>
-        <div className="flex border-x border-b border-[#E9EEF3] p-5 items-center justify-center">
-          QUANTITY SOLD
-        </div>
-        <div className="flex  border-b border-[#E9EEF3] p-5 items-center justify-center">
-          SELL PRICE
-        </div>
-        <div className="flex border-l border-b  border-[#E9EEF3] p-5 items-center justify-center">
-          SHOW PROFIT
-        </div>
-      </div>
+  const handleRowHover = (tableId: string, rowId: string) => {
+    setHoveredRow({ tableId, rowId });
+  };
+  const handleRowLeave = () => {
+    setHoveredRow(null);
+  };
 
-      <div className="flex  flex-col gap-6">
-        {groupedData.map((data) => (
-          <div>
-            <div className="grid grid-cols-[1fr_0.69fr_0.69fr_0.69fr] pb-0 pl-[3px] p-5">
-              <div className="grid grid-cols-[1fr_0.1fr] place-items-center pr-3 ">
-                <div className="flex justify-evenly items-center bg-[#F6F8FA] border-x border-t  border-[#DEE5ED] rounded-t-[10px] p-3 gap-3">
-                  <p className="text-[#2A2A2A] font-[500] text-xl">
-                    {data.date}
-                  </p>
-                  <div className="bg-[#DEE5ED] h-[20px] w-[1.5px]" />
-                  <p className="text-[#888888] font-[450] text-xl">
-                    {data.time}
-                  </p>
-                </div>
-                <h3 className="text-[#2A2A2A] font-[450] text-xl text-center px-3">
-                  {data.total.itemName}
-                </h3>
-              </div>
-              <div className="border-x border-y rounded-tl-2xl border-[#DEE5ED] bg-[#E5F5ED] p-[3px] flex items-center justify-center text-[#090F1C] font-[500] text-xl">
-                {data.total.quantitySold}
-              </div>
-              <div className="border-r border-y border-[#DEE5ED] bg-[#E5F5ED] p-[3px] flex items-center justify-center text-[#090F1C] font-[500] text-xl">
-                ₦{data.total.sellPrice}
-              </div>
-              <div className="border-r border-y rounded-tr-2xl border-[#DEE5ED] bg-[#E5F5ED] p-[3px] flex items-center justify-center text-[#090F1C] font-[500] text-xl">
-                ₦{data.total.profit}
-              </div>
-            </div>
-            {data.items.map((item, i) => (
+  const toggleSalesModal = () => {
+    setShowModal((prev) => !prev);
+  };
+  const cart = useSelector((state: RootState) => state.cart.items);
+  const completeSale = async () => {
+    console.log('cart items', cart);
+
+    if (!organizationId) return;
+
+    let customer = customersData?.items?.[0]; // Pick the first customer if available
+
+    if (!customer) {
+      try {
+        const newCustomerResponse = await createCustomer({
+          organization_id: organizationId,
+        }).unwrap();
+
+        customer = newCustomerResponse.customer;
+      } catch (error) {
+        console.error('Error creating customer:', error);
+        return;
+      }
+    }
+
+    if (!customer) return;
+    console.log('customer id:', customer);
+
+    const products_sold = cart.map((item) => ({
+      product_id: item.id,
+      amount: item.price,
+      quantity: item.quantity,
+      currency_code: 'NGN',
+    }));
+
+    try {
+      await createSale({
+        organization_id: organizationId,
+        customer_id: customer.id,
+        currency_code: customer.default_currency_code || 'NGN',
+        products_sold,
+      })
+        .unwrap()
+        .then((response) => {
+          toast.success('Sale created. Please wait to view it.');
+          console.log('Sale created:', response);
+          setShowModal(false);
+          dispatch(clearCart());
+        });
+    } catch (error) {
+      console.error('Error creating sale:', error);
+    }
+  };
+
+  const dispatch: AppDispatch = useDispatch();
+
+  React.useEffect(() => {
+    if (salesData?.items) {
+      dispatch(updateSalesCountFromData(salesData.items.length));
+    }
+  }, [salesData, dispatch]);
+
+  const pagination = table.getState().pagination;
+  const groupedData = React.useMemo(() => {
+    if (!formattedSales) return [];
+
+    const { pageSize, pageIndex } = pagination;
+    const start = pageIndex * pageSize;
+    const paginatedData = formattedSales.slice(start, start + pageSize);
+
+    return processDataIntoGroups(paginatedData);
+  }, [formattedSales, pagination]);
+
+  return (
+    <React.Fragment>
+      {groupedData.length > 0 && (
+        <Button
+          variant='outline'
+          onClick={toggleSalesModal}
+          className='absolute top-10 right-0 max-[400px]:text-sm text-nowrap max-[1000px]:hidden mr-2 disabled:opacity-50 text-black border-black'
+        >
+          + Add New Sale
+        </Button>
+      )}
+      <div className='pl-1 bg-[#F6F8FA] rounded-tr-lg rounded-bl-lg rounded-br-lg'>
+        {/* Standalone header */}
+        <div className='bg-white border-r rounded-br-lg rounded-bl-lg rounded-tr-lg '>
+          <div className='min-w-[900px] border-t border-gray-200 rounded-tr-lg bg-white'>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  {columns.map((column) => (
+                    <TableHead key={Math.random() * 10000000}>
+                      {typeof column.header === 'function'
+                        ? column.header({
+                            column: column as Column<Sale, unknown>,
+                            header:
+                              typeof column.header === 'function'
+                                ? column.header({
+                                    column: column as Column<Sale, unknown>,
+                                    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+                                    header: {} as any, // Replace with appropriate Header<Sale, unknown> if available
+                                    table: table,
+                                  })
+                                : column.header,
+                            table: table,
+                          })
+                        : column.header}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+            </Table>
+          </div>
+
+          {groupedData.length === 0 && (
+            <EmptySalePage toggleSalesModal={toggleSalesModal} />
+          )}
+
+          {/* Tables for each time group */}
+          <div className='px-5 pt-5 space-y-6'>
+            {groupedData.map((group) => (
               <div
-                key={item.id}
-                className="grid grid-cols-[1fr_0.715fr_0.715fr_0.715fr] ml-2.5 pr-5 pl-2"
+                key={group.timeKey}
+                className='border border-gray-200 rounded-lg relative '
               >
                 <div
-                  className={`flex   border-b  ${
-                    i === 0 && "border-t"
-                  } border-l border-[#E9EEF3] p-5 items-center justify-start`}
-                >
-                  {item.itemName}
-                </div>
-                <div className="flex border-x border-b border-[#E9EEF3] p-5 items-center justify-center">
-                  {item.quantitySold}
-                </div>
-                <div className="flex  border-b border-[#E9EEF3] p-5 items-center justify-center">
-                ₦{item.sellPrice}
-                </div>
-                <div className="flex border-x border-b  border-[#E9EEF3] p-5 items-center justify-center">
-                ₦{item.profit}
-                </div>
+                  className={`absolute -top-1 left-54 w-20 h-[5px]  after:w-4 after:h-4 after:border-l after:border-gray-200 after:border-t after:border-solid after:absolute after:content-[''] after:-right-[15px] after:rounded-tl-lg after:top-[3px] bg-white z-50 before:absolute before:-top-[4px] before:content-[""] before:w-2 before:h-2 before:bg-white before:-left-[6px] before:rounded-bl-lg ${
+                    hoveredRow?.tableId === group.timeKey
+                      ? 'after:bg-gray-50 after:shadow-[-1px_-1px_0_rgb(246,_248,_250)]'
+                      : ' after:bg-white after:shadow-[-3px_-3px_0_rgb(255,_255,_255)]'
+                  }`}
+                ></div>
+                <DataTable
+                  data={[group.total, ...group.items]}
+                  columns={columns}
+                  onRowHover={(rowId) => handleRowHover(group.timeKey, rowId)}
+                  onRowLeave={handleRowLeave}
+                />
               </div>
             ))}
           </div>
-        ))}
+
+          {groupedData.length > 0 && (
+            <div className='min-w-[900px] border-t border-b border-gray-200 rounded-br-lg rounded-bl-lg mt-4'>
+              <div className='px-4 py-3'>
+                <DataTablePagination
+                  table={table}
+                  viewType={viewType}
+                  setViewType={setViewType}
+                  salesCount={salesCount}
+                />
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+
+      <SalesModal
+        isOpen={showModal}
+        onClose={toggleSalesModal}
+        onCompleteSale={completeSale}
+        isFetchingProducts={isFetchingProducts}
+        isCreatingSale={isCreatingSale}
+        isCreatingCustomer={isCreatingCustomer}
+        isFetchingCustomers={isFetchingCustomers}
+        stockItems={stockItems as unknown as Product[]}
+      />
+    </React.Fragment>
   );
 }

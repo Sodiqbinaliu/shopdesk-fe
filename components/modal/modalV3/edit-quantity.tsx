@@ -1,9 +1,10 @@
 'use client';
 import type { StockItem } from '@/types/stocks';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaMinus, FaPlus, FaTimes } from 'react-icons/fa';
-//import { editQuantity } from '@/services/stock'
+import { toast } from 'sonner';
+import { editQuantity } from '@/services/stock';
 
 interface EditQuantityModalProps {
   isOpen: boolean;
@@ -17,14 +18,22 @@ export default function EditQuantityModal({
   isOpen,
   onClose,
   item,
+  onSave,
+  openSuccessModal,
 }: EditQuantityModalProps) {
+  const [quantity, setQuantity] = useState(0);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (item) {
+      setQuantity(item.quantity);
+    }
+  }, [item]);
+
   if (!(isOpen && item)) {
     return null; // Don't render if modal is closed or item is null
   }
-
-  const [quantity, setQuantity] = useState(item.quantity);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isLoading, setIsLoading] = useState(false);
 
   const increment = () => setQuantity((prev) => prev + 1);
   const decrement = () => setQuantity((prev) => (prev > 0 ? prev - 1 : 0));
@@ -35,8 +44,27 @@ export default function EditQuantityModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     setIsLoading(true);
+
+    if (isFormValid()) {
+      try {
+        await editQuantity(item.id, {
+          quantity: quantity,
+        });
+
+        onSave({
+          ...item,
+          quantity: quantity, // Update the quantity in the saved item
+        });
+        openSuccessModal();
+        onClose();
+      } catch (error) {
+        console.error('Failed to update quantity:', error);
+        toast.error('Error updating quantity');
+      } finally {
+        setIsLoading(false);
+      }
+    }
   };
 
   return (

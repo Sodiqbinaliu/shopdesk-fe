@@ -70,6 +70,14 @@
   td {
     padding: 0 !important;
   }
+
+  .table-cell-padding {
+    padding: 13px !important;
+  }
+
+  .table-object-padding {
+    padding: 26px !important;
+  }
 }
 html {
   width: 100vw;
@@ -81,7 +89,7 @@ html {
 body {
   font-family: "Circular Std Normal";
   width: 100%;
-  /* max-width: 1440px; */
+  max-width: 1440px;
 }
 
 html,
@@ -139,7 +147,6 @@ body {
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
-  --color-inactive: #83838b;
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -319,5 +326,39 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-down {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+@layer utilities {
+  .slide-up {
+    animation: slide-up 0.5s ease-out forwards;
+  }
+
+  .slide-down {
+    animation: slide-down 0.5s ease-in forwards;
   }
 }

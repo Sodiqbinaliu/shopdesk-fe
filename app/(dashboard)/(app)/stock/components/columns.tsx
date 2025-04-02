@@ -1,20 +1,157 @@
 "use client";
 
-import { fetchWeekdaySalesCount } from "@/actions/sales";
 import { Icons } from "@/components/ui/icons";
-import { setWeeklySalesData } from "@/redux/features/sale/sale.slice";
-import { RootState } from "@/redux/store";
+import {
+  toggleProfitExpand,
+  toggleSalesExpand,
+} from "@/redux/features/table/toggle.slice";
+import { AppDispatch, RootState } from "@/redux/store";
 import { useStore } from "@/store/useStore";
-import { WeeklySalesData } from "@/types/sale";
 import type { ColumnDef } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { TableMeta } from "./data-table";
 import { DataTableColumnHeader } from "./data-table-column-header";
-import { DataTableRowActions } from "./data-table-row-actions";
+// import { DataTableRowActions } from "./data-table-row-actions";
+import {
+  useGetProfitsOfStocksQuery,
+  useGetSalesThisWeekQuery,
+} from "@/redux/features/sale/sale.api";
+import { useGetStocksQuery } from "@/redux/features/stock/stock.api";
 import type { Stock } from "./data/schema";
 import { EditableCell } from "./editable-cell";
 import { ProfitColumnHeader } from "./profit-column/profit-column-header";
 import { SalesColumnHeader } from "./sales-column/sales-column-header";
+
+const SalesHeader = ({ table }: { table: any }) => {
+  const dispatch: AppDispatch = useDispatch();
+  const isSalesExpanded = useSelector(
+    (state: RootState) => state.toggleTableState.isSalesExpanded
+  );
+
+  return (
+    <SalesColumnHeader
+      table={table}
+      isExpanded={isSalesExpanded}
+      toggleExpand={() => dispatch(toggleSalesExpand())}
+    />
+  );
+};
+
+const SalesCell = ({ row }: { row: any }) => {
+  const isExpanded = useSelector(
+    (state: RootState) => state.toggleTableState.isSalesExpanded
+  );
+
+  const { organizationId } = useStore();
+  const { data: salesData, isLoading } = useGetSalesThisWeekQuery({
+    organization_id: organizationId,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center">
+        <Icons.LoadingIcon />
+      </div>
+    );
+  }
+
+  const productSales = salesData?.data?.[String(row.original.product_id)] || {};
+  console.log("Matching product sales:", productSales);
+
+  const weekdays = ["monday", "tuesday", "wednesday", "thursday", "friday"];
+
+  const filteredSales = weekdays.reduce((acc, day) => {
+    console.log(`Sales on ${day}:`, productSales[day]);
+    return acc + (productSales[day] ?? 0);
+  }, 0);
+
+  if (!isExpanded) {
+    return (
+      <div className="flex items-center justify-center">{filteredSales}</div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-5 w-full">
+      {weekdays.map((day) => (
+        <div
+          key={day}
+          className="border-r p-5 last:border-r-0 rounded-none text-sm w-full h-full text-center"
+        >
+          {productSales[day] ?? 0}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const ProfitHeader = ({ table }: { table: any }) => {
+  const dispatch: AppDispatch = useDispatch();
+  const isProfitExpanded = useSelector(
+    (state: RootState) => state.toggleTableState.isProfitExpanded
+  );
+
+  const toggleExpand = () => {
+    dispatch(toggleProfitExpand());
+    table.reset();
+  };
+
+  return (
+    <ProfitColumnHeader
+      table={table}
+      isExpanded={isProfitExpanded}
+      toggleExpand={toggleExpand}
+    />
+  );
+};
+
+const ProfitCell = ({ row }: { row: any }) => {
+  const isExpanded = useSelector(
+    (state: RootState) => state.toggleTableState.isProfitExpanded
+  );
+
+  const { organizationId } = useStore();
+  const { data: profitData, isLoading: isProfitLoading } =
+    useGetProfitsOfStocksQuery({
+      organization_id: organizationId,
+    });
+
+  const { data: stocksData, isFetching: isCostPriceFetching } =
+    useGetStocksQuery(organizationId);
+
+  if (isProfitLoading || isCostPriceFetching) {
+    return (
+      <div className="flex items-center justify-center">
+        <Icons.LoadingIcon />
+      </div>
+    );
+  }
+
+  const productProfit =
+    profitData?.data?.[String(row.original.product_id)] ?? 0;
+  const stockItem = stocksData?.find(
+    (stock) => stock.product_id === row.original.product_id
+  );
+
+  const productCostPrice = stockItem?.buying_price ?? 0;
+
+  if (!isExpanded) {
+    return (
+      <div className="flex items-center justify-center">{productProfit}</div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-2">
+      <div className="p-5 border-r border-solid border-gray-200 rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative text-center">
+        {productCostPrice}
+      </div>
+      <div className="border-none p-5 rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative text-center">
+        {productProfit}
+      </div>
+    </div>
+  );
+};
 
 export const columns: ColumnDef<Stock>[] = [
   // {
@@ -48,17 +185,19 @@ export const columns: ColumnDef<Stock>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="ITEM NAME" />
     ),
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
       const value = row.getValue<string>("name");
+      const updateSelectedRow = (
+        table.options.meta as TableMeta<typeof row.original>
+      )?.updateSelectedRow;
       return (
         <EditableCell
           value={value}
           accessorKey="name"
           stockId={row.original.id}
-          onChange={(val) => {
-            row.original.name = val;
-            // Optional: sync this update to local state or backend
-          }}
+          rowData={row.original}
+          updateSelectedRow={updateSelectedRow}
+          // Removed onChange as it's not part of EditableCellProps
         />
       );
     },
@@ -68,18 +207,22 @@ export const columns: ColumnDef<Stock>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="SELL PRICE" />
     ),
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
       const value = row.getValue<string>("buying_price");
-
+      const updateSelectedRow = (
+        table.options.meta as TableMeta<typeof row.original>
+      )?.updateSelectedRow;
       return (
         <EditableCell
           value={value}
           accessorKey="buying_price"
           currency={row.original.currency_code}
           stockId={row.original.id}
-          onChange={(val) => {
-            row.original.buying_price = val;
-          }}
+          rowData={row.original}
+          updateSelectedRow={updateSelectedRow}
+          // onChange={(val) => {
+          //   row.original.buying_price = Number(val);
+          // }}
         />
       );
     },
@@ -90,19 +233,21 @@ export const columns: ColumnDef<Stock>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="AVAILABLE" />
     ),
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
       const value = row.original.quantity;
-
-      // console.log(value, "value");
-
+      const updateSelectedRow = (
+        table.options.meta as TableMeta<typeof row.original>
+      )?.updateSelectedRow;
       return (
         <EditableCell
-          value={value || "0"}
+          value={String(value) || "0"}
           accessorKey="quantity"
           stockId={row.original.id}
-          onChange={(val) => {
-            row.original.quantity = val;
-          }}
+          rowData={row.original}
+          updateSelectedRow={updateSelectedRow}
+          // onChange={(val) => {
+          //   row.original.quantity = Number(val);
+          // }}
         />
       );
     },
@@ -110,113 +255,19 @@ export const columns: ColumnDef<Stock>[] = [
   },
   {
     accessorKey: "sales",
-    header: ({ table }) => <SalesColumnHeader table={table} />,
-    cell: ({ row, table }) => {
-      const isExpanded =
-        (table.options.meta as { isSalesExpanded?: boolean })
-          ?.isSalesExpanded || false;
-
-      const [loading, setLoading] = useState(false);
-      const { organizationId } = useStore();
-      const dispatch = useDispatch();
-      const [error, setError] = useState<string>("");
-      const salesData = useSelector(
-        (state: RootState) => state.weeklySales.data
-      );
-      useEffect(() => {
-        if (isExpanded) {
-          setLoading(true);
-          setError("");
-
-          fetchWeekdaySalesCount(organizationId, row.original.id)
-            .then((data) => {
-              if (data.error) {
-                throw new Error(data.error);
-              }
-              dispatch(setWeeklySalesData(data));
-            })
-            .catch((err) => {
-              console.error(err);
-              setError("Failed to fetch Weekly sales");
-              dispatch(
-                setWeeklySalesData({
-                  monday: 0,
-                  tuesday: 0,
-                  wednesday: 0,
-                  thursday: 0,
-                  friday: 0,
-                })
-              );
-            })
-            .finally(() => setLoading(false));
-        }
-      }, [isExpanded, organizationId, row.original.id]);
-
-      if (!isExpanded) {
-        const totalSales = Object.values(salesData || {}).reduce(
-          (acc, val) => acc + val,
-          0
-        );
-        console.log(totalSales);
-        return (
-          <div className="flex items-center justify-center">{totalSales}</div>
-        );
-      }
-
-      if (!isExpanded) {
-        return (
-          <div className="flex items-center justify-center">
-            {String(row.getValue("sales") || 0)}
-          </div>
-        );
-      }
-
-      return (
-        <div className="grid grid-cols-5 gap-2 w-full">
-          {["monday", "tuesday", "wednesday", "thursday", "friday"].map(
-            (day) => (
-              <div
-                key={day}
-                className="border-r p-5 last:pr-5 rounded-none text-sm w-full h-full"
-              >
-                {error ? "0" : salesData?.[day as keyof WeeklySalesData] ?? "0"}
-              </div>
-            )
-          )}
-        </div>
-      );
-    },
+    header: SalesHeader,
+    cell: SalesCell,
     enableSorting: true,
   },
   {
     accessorKey: "profitGroup",
-    header: ({ table }) => <ProfitColumnHeader table={table} />,
-    cell: ({ row, table }) => {
-      const isExpanded =
-        (table.options.meta as { isProfitExpanded?: boolean })
-          ?.isProfitExpanded || false;
-      // const calculatedProfit =
-      //   Number(row.original.buying_price) - Number(row.original.cost_price);
-      if (!isExpanded) {
-        return <div className="flex items-center justify-center">{0}</div>;
-      }
-
-      return (
-        <div className="grid grid-cols-2 gap-2">
-          <div className="border-none p-5  rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative">
-            {0}
-          </div>
-          <div className="border-none p-5  rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative">
-            {0}
-          </div>
-        </div>
-      );
-    },
+    header: ProfitHeader,
+    cell: ProfitCell,
     enableSorting: true,
   },
   {
     id: "actions",
-    header: ({ column }) => {
+    header: () => {
       return (
         <div
           className="h-full py-5 px-4 flex items-center justify-center bg-transparent hover:bg-black/10 transition-all duration-150 shadow-none cursor-pointer"
@@ -228,6 +279,6 @@ export const columns: ColumnDef<Stock>[] = [
         </div>
       );
     },
-    cell: ({ row }) => <DataTableRowActions row={row} />,
+    // cell: ({ row }) => <DataTableRowActions row={row} />,
   },
 ];

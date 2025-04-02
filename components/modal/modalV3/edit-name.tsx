@@ -3,7 +3,8 @@ import type { StockItem } from '@/types/stocks';
 import Image from 'next/image';
 import { useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
-//import { editName } from '@/services/stock'
+import { editName } from '@/services/stock';
+import { toast } from 'sonner';
 
 interface EditStockNameProps {
   isOpen: boolean;
@@ -17,14 +18,15 @@ export default function EditStockName({
   isOpen,
   onClose,
   item,
+  onSave,
+  openSuccessModal,
 }: EditStockNameProps) {
+  const [productName, setProductName] = useState(item?.name ?? '');
+  // const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isLoading, setIsLoading] = useState(false);
   if (!(isOpen && item)) {
     return null; // Don't render if modal is closed or item is null
   }
-
-  const [productName, setProductName] = useState(item.name);
-  // const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isLoading, setIsLoading] = useState(false);
 
   const isFormValid = () => {
     return productName;
@@ -33,7 +35,25 @@ export default function EditStockName({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!isFormValid()) {
+      return;
+    }
+
     setIsLoading(true);
+
+    try {
+      if (item) {
+        const updatedItem = await editName(item.id, { name: productName });
+        onSave(updatedItem);
+        openSuccessModal();
+        onClose();
+      }
+    } catch (error) {
+      console.error('Error updating stock name:', error);
+      toast.error('Error updating stock name');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

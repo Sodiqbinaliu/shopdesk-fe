@@ -32,11 +32,10 @@ export const columns: ColumnDef<Sale>[] = [
         return (
           <div className='flex justify-between items-center relative h-11'>
             <div className='text-sm text-gray-600 px-5 h-full border-t-0 border-l-0 rounded-tr-[0.625rem] rounded-tl-[0.625rem] border-[#DEE5ED] w-3/4 text-center flex justify-center items-center border-solid border-b-0 border'>
-              {row.original.date} {row.original.time}
+              {row.original.date} <span className='text-[#DEE5ED] mx-3'>|</span>{' '}
+              {row.original.time}
             </div>
-            <div className="font-semibold px-5 before:absolute before:w-20 before:h-4 before:bg-black before:-top-6  before:right-0 before:content-['']">
-              Total
-            </div>
+            <div className='font-semibold px-5'>Total</div>
           </div>
         );
       }

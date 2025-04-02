@@ -21,7 +21,8 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   loading?: boolean;
   error?: string | null;
-  showHeader?: boolean;
+  onRowHover?: (rowId: string) => void;
+  onRowLeave?: () => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -29,6 +30,8 @@ export function DataTable<TData, TValue>({
   data,
   loading,
   error,
+  onRowHover,
+  onRowLeave,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -99,12 +102,14 @@ export function DataTable<TData, TValue>({
                     key={row.id}
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                     data-state={row.getIsSelected() && 'selected'}
-                    className='hover:bg-gray-50 cursor-pointer overflow-x-auto grid grid-cols-4 border-b border-gray-200 first:h-11 '
+                    onMouseEnter={() => row.index === 0 && onRowHover?.(row.id)}
+                    onMouseLeave={onRowLeave}
+                    className='hover:bg-gray-50 overflow-x-auto grid grid-cols-4 border-b border-gray-200 first:h-11 '
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell
                         key={cell.id}
-                        className='px-4 py-3 text-sm text-gray-800 border-r border-gray-200 last:border-r-0 h-11'
+                        className='px-4 py-3 text-sm text-gray-800 border-r overflow-y-auto border-gray-200 last:border-r-0 h-11'
                       >
                         {flexRender(
                           cell.column.columnDef.cell,

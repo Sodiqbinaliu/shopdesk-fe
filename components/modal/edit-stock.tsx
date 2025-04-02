@@ -8,10 +8,11 @@ import {
   FaPlus,
   FaTimes,
 } from 'react-icons/fa';
-import { currencies } from './add-item';
+
 import { editStock } from '@/services/stock';
 import { Label } from '../ui/label';
 import type { Currency } from '@/types/stocks';
+import { currencies } from '@/app/(auth)/create-organization/_components/CreateOrganization';
 //import { editStock } from "@/services/stock";
 
 interface EditItemModal {
@@ -39,10 +40,6 @@ export default function EditItemModal({
   item,
   onSave,
 }: EditItemModal) {
-  if (!(isOpen && item)) {
-    return null; // Don't render if modal is closed or item is null
-  }
-
   const [searchQuery, setSearchQuery] = useState('');
   const [isCurrencyModalOpen, setCurrencyModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -94,7 +91,6 @@ export default function EditItemModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     setIsLoading(true);
 
     if (validateForm()) {
@@ -132,7 +128,6 @@ export default function EditItemModal({
     setCurrencyModalOpen(false);
   };
 
-  // Close modal when outside of div is clicked
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -149,8 +144,8 @@ export default function EditItemModal({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  if (!isOpen) {
-    return null;
+  if (!(isOpen && item)) {
+    return null; // Don't render if modal is closed or item is null
   }
 
   return (
@@ -282,7 +277,7 @@ export default function EditItemModal({
                           onClick={() => handleCurrencySelect(currency)}
                           onKeyDown={() => handleCurrencySelect(currency)}
                         >
-                          <img
+                          <Image
                             src={currency.flag}
                             alt={`${currency.name} Flag`}
                             className='w-8 h-8 rounded-full object-cover mr-3'
@@ -330,7 +325,9 @@ export default function EditItemModal({
                       const value = e.target.value;
 
                       if (/^\d*$/.test(value)) {
-                        setQuantity(value === '' ? 0 : Number.parseInt(value, 10));
+                        setQuantity(
+                          value === '' ? 0 : Number.parseInt(value, 10)
+                        );
                         setErrors((prev) => ({ ...prev, quantity: '' }));
                       } else {
                         setErrors((prev) => ({
