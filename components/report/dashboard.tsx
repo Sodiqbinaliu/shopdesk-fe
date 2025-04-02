@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 // import { Search, ArrowUp } from 'lucide-react';
 import Image from 'next/image';
 import Revenue from '@/components/report/revenue';
@@ -7,11 +7,22 @@ import BestSelling from '@/components/report/bestSellingProducts';
 import { useStore } from '@/store/useStore';
 
 function ReportDashboard() {
-  // const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-  // const [searchTerm, setSearchTerm] = useState("");
+  const [totalSales, setTotalSales] = useState('0 Units');
 
-  // const openExportModal = () => setIsExportModalOpen(true);
-  // const closeExportModal = () => setIsExportModalOpen(false);
+  useEffect(() => {
+    const fetchTotalSales = async () => {
+      try {
+        const res = await fetch(`/api/reports/sales?organization_id=afb77f9834044fdbaf9dda18a9203728&range=Monthly`);
+        if (!res.ok) throw new Error('Failed to fetch');
+        const data = await res.json();
+        setTotalSales(`${data.total || 0} Units`);
+      } catch (err) {
+        console.error('Error fetching total sale transactions:', err);
+      }
+    };
+
+    fetchTotalSales();
+  }, []);
 
   const metrics = [
     {
@@ -40,7 +51,7 @@ function ReportDashboard() {
     },
     {
       title: 'Total Sale Transaction',
-      value: '52 Units',
+      value: totalSales,
       change: '-0% vs last week',
       icon: '/icons/TotalSale.svg',
       textColor: 'text-grey-600',

@@ -13,15 +13,32 @@ type Product = {
 };
 
 const BestSellingProducts = () => {
-  const { products, fetchProducts, isProductLoading } = useStore();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isProductLoading, setIsProductLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [showCategoryOptions, setShowCategoryOptions] = useState(false);
+  const [showAll, setShowAll] = useState(false);
+  const organizationId = useStore((state) => state.organizationId);
 
   useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+    const fetchBestSellers = async () => {
+      if (!organizationId) return;
+
+      try {
+        const res = await fetch(`/api/best-sellers?organization_id=${organizationId}`);
+        const data = await res.json();
+        setProducts(data.bestSellers || []);
+      } catch (err) {
+        console.error('Failed to fetch best sellers:', err);
+      } finally {
+        setIsProductLoading(false);
+      }
+    };
+
+    fetchBestSellers();
+  }, [organizationId]);
 
   useEffect(() => {
     let filtered: Product[] = products;
@@ -56,7 +73,12 @@ const BestSellingProducts = () => {
             </div>
             <h2 className='text-lg font-bold'>Best Selling Products</h2>
           </div>
-          <p className='text-[16px] text-gray-400 hidden lg:flex '>View all</p>
+          <button
+            onClick={() => setShowAll((prev) => !prev)}
+            className='text-[16px] text-blue-500 underline hidden lg:flex'
+          >
+            {showAll ? 'Show less' : 'View all'}
+          </button>
         </div>
         <div className='flex flex-col lg:flex-row gap-3 justify-between lg:items-center mb-4'>
           <div className='flex gap-3'>
@@ -166,7 +188,7 @@ const BestSellingProducts = () => {
                 </td>
               </tr>
             ) : Array.isArray(filteredProducts) ? (
-              filteredProducts.map((product) => (
+              (showAll ? filteredProducts : filteredProducts.slice(0, 3)).map((product) => (
                 <tr key={product.id}>
                   <td className='table-object-padding'>
                     {product.name || 'Unnamed Product'}
