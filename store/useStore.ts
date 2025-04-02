@@ -95,9 +95,10 @@ export const useStore = create<State>()(
       fetchRevenue: async () => {
         set({ isRevenueLoading: true, isRevenueError: false });
         try {
-          const res = await fetch('/api/reports/sales/generate');
+          const organizationId = useStore.getState().organizationId;
+          const res = await fetch(`/api/reports/sales?organization_id=${organizationId}&range=Monthly`);
           const data = await res.json();
-          set({ revenueData: data?.weeklyRevenue || [] });
+          set({ revenueData: data?.values || [] });
         } catch (error) {
           console.error('Failed to fetch revenue', error);
           set({ isRevenueError: true });
