@@ -40,16 +40,20 @@ export async function PUT(req: Request) {
   }
 
   try {
-    const { id, ...updatedData } = await req.json(); // Extract id from request body
-    if (!id) {
+    const rawBody = await req.text();
+    console.log("Raw request body:", rawBody);
+
+    if (!rawBody) {
       return NextResponse.json(
-        { error: "User ID is required" },
+        { error: "Request body is empty" },
         { status: 400 }
       );
     }
 
-    const apiUrl = `https://api.timbu.cloud/users/profile/update`;
-    console.log(updatedData);
+    const updatedData = JSON.parse(rawBody);
+    console.log("Parsed Updated Data:", updatedData);
+
+    const apiUrl = `https://api.timbu.cloud/users/me`;
     const response = await fetch(apiUrl, {
       method: "PUT",
       headers: {
@@ -58,8 +62,10 @@ export async function PUT(req: Request) {
       },
       body: JSON.stringify(updatedData),
     });
+
     const responseBody = await response.text();
     console.log("Response Body:", responseBody);
+
     if (!response.ok) {
       return NextResponse.json(
         { error: `Request failed with status: ${response.status}` },
@@ -67,41 +73,17 @@ export async function PUT(req: Request) {
       );
     }
 
-    const data = await response.json();
+    const data = JSON.parse(responseBody);
+    console.log("Parsed API Response:", data);
     return NextResponse.json(data);
   } catch (error) {
+    console.error("Error updating user:", error);
     return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Internal server error",
-      },
+      { error: error instanceof Error ? error.message : "Internal server error" },
       { status: 500 }
     );
   }
 }
-export async function PATCH(req: Request) {
-  let accessToken = (await cookies()).get("access_token")?.value;
-  if (!accessToken) {
-    accessToken = await refreshAccessToken();
-  }
-  const body = await req.formData();
-  try {
-    const response = await fetch(`https://api.timbu.cloud/users/image/upload`, {
-      method: "PATCH",
-      headers: {
-        'Accept': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body,
-    });
-    const data = await response.json();
-    console.log(data);
-    return NextResponse.json(data);
-  } catch (error) {
-    return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Internal server error",
-      },
-      { status: 500 }
-    );
-  }
-}
+
+
+

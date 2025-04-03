@@ -630,10 +630,12 @@ export default function SignUp() {
                                   (c) => c.code === formData.phoneCountryCode
                                 )?.flag || '/modal-images/nigeria-flag.svg'
                               }
+                              width={20}
+                              height={20}
                               alt='Selected Country'
                               className='h-6 w-6'
                             />
-                          </div>
+                         </div>
                         </div>
                       </div>
                       <span className='text-gray-700 text-sm'>
