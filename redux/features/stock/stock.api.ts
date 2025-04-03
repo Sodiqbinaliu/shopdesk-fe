@@ -24,10 +24,10 @@ interface CreateStockRequest extends StockBase {
 interface EditStockRequest {
   id: string;
   organization_id: string;
-  name: string;
-  quantity: number;
-  buying_price: number;
-  currency_code: string;
+  name?: string;
+  quantity?: number;
+  buying_price?: number;
+  currency_code?: string;
 }
 
 interface StockResponse extends StockBase {}
@@ -139,7 +139,10 @@ export const accessControlApi = api.injectEndpoints({
           organization_id: data.organization_id,
         },
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Stock', id }],
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'Stock', id },
+        { type: 'Stock', id: 'LIST' }
+      ],
     }),
 
     // createStock: builder.mutation<
