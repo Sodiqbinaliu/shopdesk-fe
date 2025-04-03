@@ -1,30 +1,31 @@
 'use client';
 import Image from 'next/image';
-import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { FaChevronDown, FaSearch, FaTimes } from 'react-icons/fa';
 import type { Currency, StockItem } from '@/types/stocks';
 import { currencies } from '@/app/(auth)/create-organization/_components/CreateOrganization';
-import { editPrice } from '@/services/stock';
 import { toast } from 'sonner';
+import { useEditStockMutation } from '@/redux/features/stock/stock.api';
+import { useStore } from '@/store/useStore';
 
 interface EditPriceModalProps {
   isOpen: boolean;
   onClose: () => void;
   item: StockItem | null;
-  onSave: (updatedPrice: number) => void;
   openSuccessModal: () => void;
+  onSave: (updatedPrice: number) => void;
 }
 
 export default function EditPriceModal({
   isOpen,
   onClose,
   item,
-  onSave,
   openSuccessModal,
+  onSave,
 }: EditPriceModalProps) {
+  const [editStock, { isLoading }] = useEditStockMutation();
+  
   const [price, setPrice] = useState(item?.buying_price ?? 0);
-  const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isCurrencyModalOpen, setCurrencyModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -34,6 +35,17 @@ export default function EditPriceModal({
     currencies.find((currency) => currency.code === item?.currency_code) ||
       currencies[0]
   );
+  const organizationId = useStore((state) => state.organizationId);
+
+  useEffect(() => {
+    if (item) {
+      setPrice(item.buying_price ?? 0);
+      setSelectedSellingCurrency(
+        currencies.find((currency) => currency.code === item.currency_code) ||
+          currencies[0]
+      );
+    }
+  }, [item]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -52,7 +64,7 @@ export default function EditPriceModal({
   }, []);
 
   if (!(isOpen && item)) {
-    return null; // Don't render if modal is closed or item is null
+    return null;
   }
 
   const filteredCurrencies = currencies.filter((currency) =>
@@ -65,23 +77,25 @@ export default function EditPriceModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
 
     if (isFormValid()) {
       try {
-        await editPrice(item.id, {
+        await editStock({
+          id: item.id,
+          organization_id: organizationId, 
+          name: item.name, 
+          quantity: item.quantity,
           buying_price: Number.parseFloat(`${price}`),
           currency_code: selectedSellingCurrency.code,
-        });
+        }).unwrap();
 
-        onSave(Number.parseFloat(`${price}`));
+        onSave(price);
+
         openSuccessModal();
         onClose();
       } catch (error) {
         console.error('Failed to update price:', error);
         toast.error('Error updating price');
-      } finally {
-        setIsLoading(false);
       }
     }
   };
@@ -97,10 +111,10 @@ export default function EditPriceModal({
 
   return (
     <div className='fixed inset-0 bg-[#24242433] bg-opacity-20 flex items-center justify-center p-4'>
-      <div className='bg-white rounded-lg shadow-lg  border border-[#A0A0A0] w-full max-w-[564px] flex flex-col gap-[28px]'>
+      <div className='bg-white rounded-lg shadow-lg border border-[#A0A0A0] w-full max-w-[564px] flex flex-col gap-[28px]'>
         <div className='p-6 gap-5 flex flex-col'>
           <div className='flex gap-2.5'>
-            <div className='flex p-2 '>
+            <div className='flex p-2'>
               <div className='bg-[#CCEBDB] max-w-[48px] max-h-[48px] p-[8px] rounded-[8px] flex items-center justify-center'>
                 <Image
                   src='/modal-images/bank.svg'
@@ -191,7 +205,7 @@ export default function EditPriceModal({
                     <FaSearch className='absolute left-[32px] top-1/2 transform -translate-y-1/2 text-[#B8B8B8] w-[20px] h-[20px]' />
                   </div>
 
-                  <div className='h-[200px] overflow-y-auto custom-scrollbar px-[20px] py-3 '>
+                  <div className='h-[200px] overflow-y-auto custom-scrollbar px-[20px] py-3'>
                     {filteredCurrencies.map((currency) => (
                       <div
                         key={currency.code}
@@ -241,7 +255,7 @@ export default function EditPriceModal({
                       ? 'bg-black text-white border-black'
                       : 'bg-[#D0D0D0] text-[#F1F1F1] border-[#B8B8B8]'
                   }`}
-                  disabled={!isFormValid()}
+                  disabled={!isFormValid() || isLoading}
                 >
                   {isLoading ? 'Saving...' : 'Save'}
                 </button>

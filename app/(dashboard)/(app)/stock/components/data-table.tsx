@@ -29,6 +29,8 @@ import * as React from 'react';
 import { DataTablePagination } from './data-table-pagination';
 import { DataTableToolbar } from './data-table-toolbar';
 import EmptyStock from './empty-stock-state';
+import { useEditStockMutation } from '@/redux/features/stock/stock.api';
+import { useStore } from '@/store/useStore';
 
 interface DataTableProps<TData extends { id: string | number }, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -47,24 +49,59 @@ export function DataTable<TData extends { id: string | number }, TValue>({
   loading,
   error,
 }: DataTableProps<TData, TValue>) {
+  const [tableData, setTableData] = React.useState<TData[]>(data);
+  
+  React.useEffect(() => {
+    setTableData(data);
+  }, [data]);
+  
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const [editStock] = useEditStockMutation();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [selectedRow, setSelectedRow] = React.useState<TData | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
   const [isAddStockModalOpen, setIsAddStockModalOpen] = React.useState(false);
+  const organizationId = useStore((state) => state.organizationId);
 
-  const updateSelectedRow = React.useCallback((updatedData: Partial<TData>) => {
-    setSelectedRow((prev) => {
-      if (prev && prev.id === updatedData.id) {
-        return { ...prev, ...updatedData };
+  const updateSelectedRow = React.useCallback(async (updatedData: Partial<TData> & { id: string }) => {
+    try {
+      // Create clean update object
+      const { id, ...updateFields } = updatedData;
+      const updatePayload = {
+        ...updateFields,
+        organization_id: organizationId,
+      };
+
+      await editStock({
+        id,
+        ...updatePayload
+      }).unwrap();
+      
+      if (selectedRow && selectedRow.id === id) {
+        setSelectedRow(prev => prev ? {...prev, ...updateFields} : null);
       }
-      return prev;
-    });
+      
+      setTableData(prevData => 
+        prevData.map(item => 
+          item.id === id ? { ...item, ...updateFields } : item
+        )
+      );
+    } catch (error) {
+      console.error("Update failed:", error);
+    }
+  }, [editStock, organizationId, selectedRow]);
+
+  const handleSidebarItemUpdate = React.useCallback((updatedItem: TData) => {
+    setTableData(prevData => 
+      prevData.map(item => 
+        item.id === updatedItem.id ? updatedItem : item
+      )
+    );
   }, []);
 
   const columns = React.useMemo(() => {
@@ -86,7 +123,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
   }, [baseColumns, updateSelectedRow]);
 
   const table = useReactTable({
-    data,
+    data: tableData, 
     columns,
     state: {
       sorting,
@@ -111,6 +148,14 @@ export function DataTable<TData extends { id: string | number }, TValue>({
   });
 
   const handleRowClick = (row: TData) => {
+    const rowIndex = tableData.findIndex(item => item.id === row.id);
+    
+    const newRowSelection: Record<number, boolean> = {};
+    if (rowIndex !== -1) {
+      newRowSelection[rowIndex] = true;
+      setRowSelection(newRowSelection);
+    }
+    
     setSelectedRow(row);
     setIsSidebarOpen(true);
   };
@@ -172,9 +217,9 @@ export function DataTable<TData extends { id: string | number }, TValue>({
                   table.getRowModel().rows.map((row) => (
                     <TableRow
                       key={row.original.id}
-                      data-state={row.getIsSelected() && 'selected'}
+                      data-state={row.getIsSelected() ? 'selected' : ''}
                       onClick={() => handleRowClick(row.original)}
-                      className='hover:bg-gray-50 cursor-pointer'
+                      className="hover:bg-gray-50 cursor-pointer"
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell
@@ -216,6 +261,8 @@ export function DataTable<TData extends { id: string | number }, TValue>({
         <div className='w-[365px] flex-shrink-0'>
           <Sidebar
             selectedItem={selectedRow}
+            setSelectedItem={setSelectedRow}
+            onItemUpdate={handleSidebarItemUpdate} // Pass new handler to sync updates
             onClose={() => setIsSidebarOpen(false)}
           />
         </div>

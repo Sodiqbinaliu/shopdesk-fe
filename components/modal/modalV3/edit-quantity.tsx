@@ -4,7 +4,8 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { FaMinus, FaPlus, FaTimes } from 'react-icons/fa';
 import { toast } from 'sonner';
-import { editQuantity } from '@/services/stock';
+import { useEditStockMutation } from '@/redux/features/stock/stock.api';
+import { useStore } from '@/store/useStore';
 
 interface EditQuantityModalProps {
   isOpen: boolean;
@@ -23,7 +24,8 @@ export default function EditQuantityModal({
 }: EditQuantityModalProps) {
   const [quantity, setQuantity] = useState(0);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [editStock, { isLoading }] = useEditStockMutation();
+  const organizationId = useStore((state) => state.organizationId);
 
   useEffect(() => {
     if (item) {
@@ -32,7 +34,7 @@ export default function EditQuantityModal({
   }, [item]);
 
   if (!(isOpen && item)) {
-    return null; // Don't render if modal is closed or item is null
+    return null; 
   }
 
   const increment = () => setQuantity((prev) => prev + 1);
@@ -42,31 +44,35 @@ export default function EditQuantityModal({
     return quantity > 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+  // Inside EditQuantityModal's handleSubmit function:
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    if (isFormValid()) {
-      try {
-        await editQuantity(item.id, {
-          quantity: quantity,
-        });
-
-        onSave({
-          ...item,
-          quantity: quantity, // Update the quantity in the saved item
-        });
-        openSuccessModal();
-        onClose();
-      } catch (error) {
-        console.error('Failed to update quantity:', error);
-        toast.error('Error updating quantity');
-      } finally {
-        setIsLoading(false);
-      }
+  if (isFormValid() && item) {
+    try {
+      await editStock({
+        id: item.id,
+        organization_id: organizationId,
+        quantity: quantity,
+        name: item.name,
+        buying_price: item.buying_price,
+        currency_code: item.currency_code,
+      }).unwrap();
+      
+      const updatedItem: StockItem = {
+        ...item,
+        quantity: quantity
+      };
+      
+      onSave(updatedItem);
+      openSuccessModal();
+      onClose();
+    } catch (error) {
+      console.error('Failed to update quantity:', error);
+      toast.error('Error updating quantity');
     }
-  };
-
+  }
+};
   return (
     <div className='fixed inset-0 bg-[#24242433] bg-opacity-20 flex items-center justify-center p-4'>
       <div className='bg-white rounded-lg shadow-lg w-full border border-[#A0A0A0] max-w-[564px] flex flex-col gap-[28px]'>
@@ -173,7 +179,7 @@ export default function EditQuantityModal({
                       ? 'bg-black text-white border-black'
                       : 'bg-[#D0D0D0] text-[#F1F1F1] border-[#B8B8B8]'
                   }`}
-                  disabled={!isFormValid()}
+                  disabled={!isFormValid() || isLoading}
                 >
                   {isLoading ? 'Saving...' : 'Save'}
                 </button>

@@ -3,8 +3,6 @@ import { X } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import {
   closeEditModal,
-  openEditName,
-  closeEditName,
   openEditQuantity,
   closeEditQuantity,
   openEditPrice,
@@ -20,7 +18,6 @@ import ImageUploader from '@/components/modal/add-image';
 import { Button } from '@/components/ui/button';
 import EditStockV3Modal from '../modal/modalV3/edit-stock';
 import EditPriceModal from '../modal/modalV3/edit-price';
-import EditStockName from '../modal/modalV3/edit-name';
 import EditQuantityModal from '../modal/modalV3/edit-quantity';
 import EditSuccessModal from '../modal/modalV3/edit-success';
 import EditImage from '../modal/edit-image';
@@ -28,14 +25,20 @@ import Logo from './logo';
 
 interface SidebarProps {
   selectedItem: any;
+  setSelectedItem: React.Dispatch<React.SetStateAction<any>>;
+  onItemUpdate: (updatedItem: any) => void; // New prop
   onClose: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ selectedItem, onClose }) => {
+const Sidebar: React.FC<SidebarProps> = ({ 
+  selectedItem, 
+  setSelectedItem, 
+  onItemUpdate, // New prop
+  onClose 
+}) => {
   const dispatch = useAppDispatch();
   const {
     isEditModalOpen,
-    isEditNameOpen,
     isEditQuantityOpen,
     isEditPriceOpen,
     isSuccessModalOpen,
@@ -49,23 +52,37 @@ const Sidebar: React.FC<SidebarProps> = ({ selectedItem, onClose }) => {
       images: images,
       image: images.length > 0 ? images[0] : null,
     };
+    
+    setSelectedItem(updatedItem);
+    
+    onItemUpdate(updatedItem);
+    
     dispatch(
       saveItem({
         ...updatedItem,
-        supplier: updatedItem.supplier || { id: '', name: 'Unknown Supplier' }, // Provide a default Supplier
+        supplier: updatedItem.supplier || { id: '', name: 'Unknown Supplier' }, 
       })
     );
+    
     dispatch(closeImageUploader());
   };
 
   const handleSavePrice = (updatedPrice: number) => {
-    const updatedItem = { ...selectedItem, buying_price: updatedPrice };
+    const updatedItem = { 
+      ...selectedItem, 
+      buying_price: updatedPrice 
+    };
+    
+    setSelectedItem(updatedItem);
+    onItemUpdate(updatedItem);
+    
     dispatch(
       saveItem({
         ...updatedItem,
-        supplier: updatedItem.supplier || { id: '', name: 'Unknown Supplier' }, // Ensure supplier is valid
+        supplier: typeof updatedItem.supplier === 'string' ? updatedItem.supplier : null,
       })
     );
+    
     dispatch(closeEditPrice());
   };
 
@@ -79,10 +96,10 @@ const Sidebar: React.FC<SidebarProps> = ({ selectedItem, onClose }) => {
       />
 
       {/* Main sidebar container */}
-      <div className='fixed inset-y-0 right-0 z-40 w-full h-full max-w-[100vw] bg-white shadow-lg lg:relative lg:w-[356px] lg:border lg:border-[#DEE5ED] flex flex-col overflow-y-auto'>
+      <div className='fixed inset-y-0 right-0 z-40 w-full h-full max-w-[100vw] bg-white lg:relative lg:w-[356px] lg:border lg:border-[#DEE5ED] flex flex-col overflow-y-auto rounded-lg'>
         {/* Desktop header */}
-        <div className='hidden lg:flex p-4 items-center justify-between border-b border-[#DEE5ED]'>
-          <h2 className='text-xl font-semibold'>{selectedItem.name}</h2>
+        <div className='hidden lg:flex px-4 py-6 items-center justify-between border-b border-[#DEE5ED]'>
+          <h2 className='text-2xl font-semibold'>{selectedItem.name}</h2>
           <button
             type='button'
             onClick={onClose}
@@ -93,7 +110,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selectedItem, onClose }) => {
         </div>
 
         {/* Mobile header */}
-        <div className='lg:hidden flex items-center justify-between p-4 border-b border-[#DEE5ED] sticky top-0 bg-white z-10'>
+        <div className='lg:hidden flex items-center justify-between px-4 py-6 border-b border-[#DEE5ED] sticky top-0 bg-white z-10'>
           <Logo />
           <button
             type='button'
@@ -105,25 +122,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selectedItem, onClose }) => {
         </div>
 
         {/* Scrollable content */}
-        <div className='flex-1 overflow-y-auto p-4'>
-          {/* Product Name */}
-          <div className='flex justify-between items-center p-3 mb-3 rounded-md bg-[#F8FAFB]'>
-            <div>
-              <p className='text-[#717171] text-sm'>Product name</p>
-              <p className='text-[#2A2A2A] font-medium'>
-                {selectedItem?.name || selectedItem?.productName || 'No name'}
-              </p>
-            </div>
-            <button
-              type='button'
-              onClick={() => dispatch(openEditName())}
-              className='text-sm font-medium px-4 py-2 border border-[#A0A0A0] rounded-xl lg:border-none lg:text-[#009A49]'
-            >
-              Edit
-            </button>
-          </div>
-
-          {/* Other fields */}
+        <div className='flex-1 overflow-y-auto p-4 flex flex-col justify-evenly'>
           {[
             {
               label: 'Cost Price',
@@ -140,7 +139,8 @@ const Sidebar: React.FC<SidebarProps> = ({ selectedItem, onClose }) => {
             {
               label: 'Discount',
               value: selectedItem?.discount || 'Not Set',
-              editable: false,
+              editable: true,
+              showAdd: !selectedItem?.discount,
             },
             {
               label: 'Available',
@@ -166,24 +166,24 @@ const Sidebar: React.FC<SidebarProps> = ({ selectedItem, onClose }) => {
               className='flex justify-between items-center p-3 mb-3 rounded-md bg-[#F8FAFB]'
             >
               <div>
-                <p className='text-[#717171] text-sm'>{item.label}</p>
-                <p className='text-[#2A2A2A] font-medium'>{item.value}</p>
+                <p className='text-gray-500 text-lg'>{item.label}</p>
+                <p className='text-gray-900 font-medium text-xl'>{item.value}</p>
               </div>
               {item.editable && (
                 <button
                   type='button'
                   onClick={() => {
-                    if (item.label === 'Image') {
+                    if (item.label === 'Image'){
                       dispatch(openImageUploader());
                     } else if (item.label.includes('Price')) {
                       dispatch(openEditPrice());
                     } else if (item.label === 'Available') {
                       dispatch(openEditQuantity());
-                    }
+                    }else if (item.label === 'Discount') console.log('Discount clicked');
                   }}
-                  className='text-sm font-medium px-4 py-2 border border-[#A0A0A0] rounded-xl lg:border-none lg:text-[#009A49]'
+                  className=' hover:cursor-pointer text-lg font-medium px-6 py-2 border border-[#A0A0A0] rounded-xl lg:border-none lg:text-[#009A49]'
                 >
-                  {item.label === 'Image' ? 'Add' : 'Edit'}
+                   {(item.label === 'Image' || item.label === 'Discount') && item.showAdd ? 'Add' : 'Edit'}
                 </button>
               )}
             </div>
@@ -191,11 +191,11 @@ const Sidebar: React.FC<SidebarProps> = ({ selectedItem, onClose }) => {
         </div>
 
         {/* Mobile buttons */}
-        <div className='lg:hidden p-4 border-t border-[#E9EEF3] sticky bottom-0 bg-white'>
-          <Button className='w-full mb-3 bg-gray-200 text-gray-800 hover:bg-gray-300 h-12'>
+        <div className='lg:hidden p-6 border-t border-[#E9EEF3] sticky bottom-0 bg-white'>
+          <Button className='w-full mb-3 bg-gray-200 text-gray-800 hover:bg-gray-300 h-16 text-lg'>
             Save
           </Button>
-          <Button className='w-full bg-white text-red-600 border border-red-600 hover:bg-red-50 h-12'>
+          <Button className='w-full bg-white text-red-600 border border-red-600 hover:bg-red-50 h-16 text-lg'>
             Delete Stock
           </Button>
         </div>
@@ -232,7 +232,12 @@ const Sidebar: React.FC<SidebarProps> = ({ selectedItem, onClose }) => {
             item={selectedItem}
             onClose={() => dispatch(closeEditQuantity())}
             onSave={(updatedItem) => {
-              dispatch(saveItem(updatedItem));
+              setSelectedItem(updatedItem);
+              onItemUpdate(updatedItem);
+              dispatch(saveItem({
+                ...updatedItem,
+                supplier: typeof updatedItem.supplier === 'string' ? updatedItem.supplier : null,
+              }));
               dispatch(closeEditQuantity());
             }}
             openSuccessModal={() => dispatch(openSuccessModal())}
@@ -242,7 +247,9 @@ const Sidebar: React.FC<SidebarProps> = ({ selectedItem, onClose }) => {
         {isSuccessModalOpen && (
           <EditSuccessModal
             isOpen={isSuccessModalOpen}
-            onClose={() => dispatch(closeSuccessModal())}
+            onClose={() => {
+              dispatch(closeSuccessModal())
+            }}
           />
         )}
 
@@ -253,19 +260,6 @@ const Sidebar: React.FC<SidebarProps> = ({ selectedItem, onClose }) => {
             item={selectedItem}
             openSuccessModal={() => dispatch(openSuccessModal())}
             onSave={handleSavePrice}
-          />
-        )}
-
-        {isEditNameOpen && (
-          <EditStockName
-            isOpen={isEditNameOpen}
-            item={selectedItem}
-            onClose={() => dispatch(closeEditName())}
-            onSave={(updatedItem) => {
-              dispatch(saveItem(updatedItem));
-              dispatch(closeEditName());
-            }}
-            openSuccessModal={() => dispatch(openSuccessModal())}
           />
         )}
 
