@@ -1,7 +1,7 @@
-import { api } from '@/redux/api';
-import { store, type RootState } from '@/redux/store';
-import type { OrgType } from '@/types/org';
-import type { UserType } from '@/types/user';
+import { api } from "@/redux/api";
+import { store, type RootState } from "@/redux/store";
+import type { OrgType } from "@/types/org";
+import type { UserType } from "@/types/user";
 
 // TODO: Ensure uou add your response and request types in a types.ts file in the same folder e.g (SignupResponse, SignupRequest) see below for more details
 // interface UserBase {
@@ -69,8 +69,8 @@ export const authApi = api.injectEndpoints({
       { email: string; password: string }
     >({
       query: ({ email, password }) => ({
-        url: '/auth/login/',
-        method: 'POST',
+        url: "/auth/login/",
+        method: "POST",
         body: {
           email,
           password,
@@ -80,8 +80,8 @@ export const authApi = api.injectEndpoints({
 
     signup: builder.mutation({
       query: (values) => ({
-        url: '/auth/signup/',
-        method: 'POST',
+        url: "/auth/signup/",
+        method: "POST",
         body: values,
       }),
     }),
@@ -105,16 +105,16 @@ export const authApi = api.injectEndpoints({
         const token = (store.getState() as RootState).auth.token;
 
         // 🔍 Debugging: Log token and body
-        console.log('🟢 Token Sent from Frontend:', token);
-        console.log('📝 Body Sent:', values);
+        console.log("🟢 Token Sent from Frontend:", token);
+        console.log("📝 Body Sent:", values);
 
         if (!token) {
-          throw new Error('Authorization token is missing');
+          throw new Error("Authorization token is missing");
         }
 
         return {
-          url: '/organization/create/',
-          method: 'POST',
+          url: "/organization/create/",
+          method: "POST",
           body: values,
           headers: {
             Authorization: `Bearer ${token}`,
@@ -159,36 +159,61 @@ export const authApi = api.injectEndpoints({
     //     url: `/auth/resend-otp/?email=${email}`,
     //   }),
     // }),
+
     getUser: builder.query<UserType, void>({
-      query: () => 'auth/user',
-      providesTags: ['User'],
+      query: () => "auth/user",
+      providesTags: ["User"],
     }),
     getOrganizations: builder.query<OrganizationResponse, void>({
       query: () => "organization",
       providesTags: ["OrganizationImage"],
     }),
-    // editUser: builder.mutation({
-    //   query: (updatedData) => ({
-    //     url: 'auth/user',
-    //     method: 'PATCH',
-    //     body: updatedData,
-    //   }),
-    //   invalidatesTags: ['User'],
-    // }),
-    // changePassword: builder.mutation({
-    //   query: ({ old_password, new_password }) => ({
-    //     url: 'auth/change-password/',
-    //     method: 'PATCH',
-    //     body: { old_password, new_password },
-    //   }),
-    // }),
 
-    // TODO: handle logout the correct way here
-    // logout: builder.mutation<void, void>({
+    editUser: builder.mutation<
+      any, // Replace with actual UserType if available
+      { id: string; email?: string; first_name?: string; last_name?: string }
+    >({
+      query: (updatedData) => ({
+        url: "auth/user", // Calls Next.js API route
+        method: "PUT",
+        body: updatedData, // Includes userId in body
+      }),
+      invalidatesTags: ["User"],
+    }),
 
-    // }),
+    editUserImage: builder.mutation<any, { formData: FormData }>({
+      query: ({ formData }) => {
+        return {
+          url: "auth/user",
+          method: "PATCH",
+          body: formData,
+        };
+      },
+      invalidatesTags: ["User"],
+    }),
   }),
 });
+
+// editUser: builder.mutation({
+//   query: (updatedData) => ({
+//     url: 'auth/user',
+//     method: 'PATCH',
+//     body: updatedData,
+//   }),
+//   invalidatesTags: ['User'],
+// }),
+// changePassword: builder.mutation({
+//   query: ({ old_password, new_password }) => ({
+//     url: 'auth/change-password/',
+//     method: 'PATCH',
+//     body: { old_password, new_password },
+//   }),
+// }),
+
+// TODO: handle logout the correct way here
+// logout: builder.mutation<void, void>({
+
+// }),
 
 export const {
   useLoginMutation,
@@ -196,7 +221,8 @@ export const {
   useGetUserQuery,
   useCreateOrgMutation,
   useGetOrganizationsQuery,
-  // useEditUserMutation,
+  useEditUserMutation,
+  useEditUserImageMutation,
   // useChangePasswordMutation,
   // useVerifyOtpMutation,
   // useLazyResendVerificationQuery,

@@ -1,4 +1,4 @@
-import type { Sale } from '../components/columns';
+import type { Sale } from "../components/columns";
 
 export function processDataIntoGroups(data: Sale[]) {
   // Group data by time without re-sorting
