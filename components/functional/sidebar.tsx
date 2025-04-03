@@ -14,6 +14,7 @@ import {
   openEditImageModal,
   closeEditImageModal,
   saveItem,
+  openEditName
 } from "@/redux/features/sidebar";
 import ImageUploader from "@/components/modal/add-image";
 import { Button } from "@/components/ui/button";

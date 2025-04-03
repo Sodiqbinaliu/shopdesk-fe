@@ -8,6 +8,7 @@ import { RootState } from "@/redux/store";
 import {
   addImages,
   removeImage,
+  setImages,
 } from "@/redux/features/productImage/productImage.slice";
 import { useCreateProductImageMutation } from "@/redux/features/productImage/productImage.api";
 import { useStore } from "@/store/useStore";
@@ -71,10 +72,17 @@ export default function ImageUploader({
       formData.append("organization_id", organizationId);
       uploadFiles.forEach((file) => formData.append("product_image", file));
 
-      createProductImage({
+      const uploadImages = await createProductImage({
         product_id,
         formData,
       }).unwrap();
+      const newProductImages = uploadImages.data.photos.map((image) => ({
+        filename: image.filename,
+        url: `https://api.timbu.cloud/images/${image.url}`,
+        model_id: image.model_id,
+        position: image.position,
+      }));
+      dispatch(setImages(newProductImages));
       toast.success("Image uploaded successfully");
       if (productImages) onSave(productImages);
 
@@ -87,10 +95,9 @@ export default function ImageUploader({
   const handleRemoveImage = (filename: string) => {
     dispatch(removeImage(filename));
 
-    // Also remove from files state
     setUploadFiles((prev) => prev.filter((file) => file.name !== filename));
+    if (fileInputRef.current) fileInputRef.current.value = "";
 
-    // Find and revoke the URL
     const imageToRemove = productImages?.find(
       (img) => img.filename === filename
     );
@@ -173,15 +180,14 @@ export default function ImageUploader({
                     {/* Display existing images */}
                     {productImages?.map((image, index) => (
                       <div
-                        key={image.filename}
+                        key={index}
                         className="relative border border-dashed border-gray-300 rounded-lg p-1 aspect-square"
                       >
                         <Image
                           src={image.url}
                           alt={`Product image ${index + 1}`}
                           layout="fill"
-                          objectFit="cover"
-                          className="rounded-lg"
+                          className="rounded-lg object-cover"
                         />
                         <button
                           onClick={() => handleRemoveImage(image.filename)}

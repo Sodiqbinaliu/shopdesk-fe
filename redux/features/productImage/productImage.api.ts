@@ -7,6 +7,15 @@ export interface ProductImagesResponse {
   model_id?: string;
 }
 
+export interface CreateImageResponse {
+  message: string;
+  data: {
+    name: string;
+    organization_id: string;
+    photos: ProductImagesResponse[];
+  };
+}
+
 export const productImageApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getProductImages: builder.query<
@@ -21,7 +30,7 @@ export const productImageApi = api.injectEndpoints({
       providesTags: ["ProductImage"],
     }),
     createProductImage: builder.mutation<
-      string,
+      CreateImageResponse,
       { product_id: string; formData: FormData }
     >({
       query: ({ product_id, formData }) => ({

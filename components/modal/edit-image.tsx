@@ -9,6 +9,7 @@ import { RootState } from "@/redux/store";
 import {
   addImages,
   removeImage,
+  setImages,
 } from "@/redux/features/productImage/productImage.slice";
 import { toast } from "sonner";
 import {
@@ -51,9 +52,6 @@ export default function EditImage({
 
   const [deleteProductImage, { isLoading: deletingImage }] =
     useDeleteProductImageMutation();
-
-  //if (!isOpen) return null;
-
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files) return;
 
@@ -91,9 +89,15 @@ export default function EditImage({
         product_id,
         formData,
       }).unwrap();
-
+      const newProductImages = uploadImages.data.photos.map((image) => ({
+        filename: image.filename,
+        url: `https://api.timbu.cloud/images/${image.url}`,
+        model_id: image.model_id,
+        position: image.position,
+      }));
+      dispatch(setImages(newProductImages));
       toast.success("Image uploaded successfully");
-      onSave(productImages || []);
+      if (productImages) onSave(productImages);
 
       setUploadFiles([]);
     } catch (error) {
@@ -102,18 +106,36 @@ export default function EditImage({
   };
 
   const handleDeleteClick = (image: { filename: string; url: string }) => {
-    setImageToDelete(image);
-    setIsDeleteModalOpen(true);
+    if (image.url.startsWith("blob")) {
+      handleRemoveImage(image.filename);
+    } else {
+      setImageToDelete(image);
+      setIsDeleteModalOpen(true);
+    }
+  };
+
+  const handleRemoveImage = (filename: string) => {
+    dispatch(removeImage(filename));
+
+    setUploadFiles((prev) => prev.filter((file) => file.name !== filename));
+    if (fileInputRef.current) fileInputRef.current.value = "";
+
+    const imageToRemove = productImages?.find(
+      (img) => img.filename === filename
+    );
+    if (imageToRemove?.url.startsWith("blob:")) {
+      URL.revokeObjectURL(imageToRemove.url);
+    }
   };
 
   const handleDeleteConfirm = async () => {
     if (imageToDelete) {
       try {
-        const deleteImage = await deleteProductImage({
+        deleteProductImage({
           organization_id: organizationId,
           product_id,
           filename: imageToDelete.filename,
-        }).unwrap();
+        });
         dispatch(removeImage(imageToDelete.filename));
         const updatedImages = (productImages || []).filter(
           (image) => image.filename !== imageToDelete.filename
@@ -205,15 +227,14 @@ export default function EditImage({
                     {/* Display existing images */}
                     {productImages?.map((image, index) => (
                       <div
-                        key={image.filename}
+                        key={index}
                         className="relative border border-dashed border-gray-300 rounded-lg p-1 aspect-square"
                       >
                         <Image
                           src={image.url}
                           alt={`Product image ${index + 1}`}
                           layout="fill"
-                          objectFit="cover"
-                          className="rounded-lg"
+                          className="rounded-lg object-cover"
                         />
                         <button
                           onClick={() => handleDeleteClick(image)}
