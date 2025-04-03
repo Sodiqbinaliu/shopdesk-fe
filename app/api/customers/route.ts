@@ -81,10 +81,9 @@ export async function POST(req: Request) {
       );
     }
 
-    // const body = await req.json();
-    const first_name = generateRandomName();
-    const last_name = generateRandomName();
-    console.log(first_name, last_name);
+    const body = await req.json();
+    const { first_name, last_name } = body;
+
     const cookieStore = await cookies();
     const accessToken = cookieStore.get('access_token')?.value;
 
@@ -106,7 +105,6 @@ export async function POST(req: Request) {
       },
       body: JSON.stringify({ first_name, last_name, organization_id }),
     });
-    console.log('response', response);
     if (!response.ok) {
       return NextResponse.json(
         { error: `Failed to create customer: ${response.statusText}` },

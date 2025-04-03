@@ -59,6 +59,7 @@ const Receipt = ({
 
     return () => clearInterval(timer);
   }, []);
+
   return (
     <div className='relative flex flex-col bg-gray-50 w-full lg:w-1/2 h-full p-6 gap-5'>
       <div className='flex flex-col h-full bg-white rounded-lg w-full'>

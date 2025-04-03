@@ -4,13 +4,10 @@ import SalesModal from '@/components/modal/salesmodal/sales-modal';
 import { Button } from '@/components/ui/button';
 // import { Icons } from "@/components/ui/icons";
 import { Table, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import {
-  useCreateCustomerMutation,
-  useGetCustomersQuery,
-} from '@/redux/features/customer/customer.api';
+import { useGetCustomersQuery } from '@/redux/features/customer/customer.api';
 import { useGetProductsForSaleQuery } from '@/redux/features/product/product.api';
 import {
-  clearCart,
+  toggleSaleSuccessful,
   updateSalesCountFromData,
 } from '@/redux/features/product/product.slice';
 import {
@@ -46,6 +43,7 @@ export default function SalesPage() {
   } | null>(null);
   const organizationId = useStore((state) => state.organizationId);
   const [showModal, setShowModal] = useState(false);
+  const [saleSuccessful, setSaleSuccessful] = useState(false);
 
   const { data: salesData, isFetching: isFetchingSalesData } = useGetSalesQuery(
     {
@@ -93,8 +91,6 @@ export default function SalesPage() {
       }
     );
 
-  const [createCustomer, { isLoading: isCreatingCustomer }] =
-    useCreateCustomerMutation();
   const [createSale, { isLoading: isCreatingSale }] = useCreateSaleMutation();
   const stockItems = ProductsData?.items ?? [];
 
@@ -130,22 +126,9 @@ export default function SalesPage() {
 
     let customer = customersData?.items?.[0]; // Pick the first customer if available
 
-    if (!customer) {
-      try {
-        const newCustomerResponse = await createCustomer({
-          organization_id: organizationId,
-        }).unwrap();
-
-        customer = newCustomerResponse.customer;
-      } catch (error) {
-        console.error('Error creating customer:', error);
-        return;
-      }
-    }
-
     if (!customer) return;
 
-    const products_sold = cart.map((item) => ({
+    const products_sold = cart.map((item: any) => ({
       product_id: item.id,
       amount: item.price,
       quantity: item.quantity,
@@ -163,8 +146,7 @@ export default function SalesPage() {
         .then((response) => {
           toast.success('Sale created. Please wait to view it.');
           console.log('Sale created:', response);
-          setShowModal(false);
-          dispatch(clearCart());
+          dispatch(toggleSaleSuccessful());
         });
     } catch (error) {
       console.error('Error creating sale:', error);
@@ -286,7 +268,6 @@ export default function SalesPage() {
         onCompleteSale={completeSale}
         isFetchingProducts={isFetchingProducts}
         isCreatingSale={isCreatingSale}
-        isCreatingCustomer={isCreatingCustomer}
         isFetchingCustomers={isFetchingCustomers}
         stockItems={stockItems as unknown as Product[]}
       />

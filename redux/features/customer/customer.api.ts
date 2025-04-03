@@ -50,11 +50,16 @@ export const customersApi = api.injectEndpoints({
 
     createCustomer: builder.mutation<
       CreateCustomerResponse,
-      { organization_id: string }
+      {
+        organization_id: string;
+        first_name: string;
+        last_name: string;
+      }
     >({
-      query: ({ organization_id }) => ({
+      query: ({ organization_id, first_name, last_name }) => ({
         url: `customers?organization_id=${organization_id}`,
         method: 'POST',
+        body: { first_name, last_name },
         // body: { organization_id },
       }),
       invalidatesTags: ['Customer'],
