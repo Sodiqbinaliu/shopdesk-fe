@@ -148,12 +148,13 @@ export const authApi = api.injectEndpoints({
     //   }),
     // }),
 
-    // deleteAccount: builder.mutation({
-    //   query: () => ({
-    //     url: '/auth/remove-account/',
-    //     method: 'DELETE',
-    //   }),
-    // }),
+    deleteAccount: builder.mutation({
+      query: () => ({
+        url: `auth/remove-account/`,
+        method: "DELETE",
+        providesTags: ["User"],
+      }),
+    }),
     // resendVerification: builder.query({
     //   query: ({ email }) => ({
     //     url: `/auth/resend-otp/?email=${email}`,
@@ -171,10 +172,15 @@ export const authApi = api.injectEndpoints({
 
     editUser: builder.mutation<
       any, // Replace with actual UserType if available
-      { id: string; email?: string; first_name?: string; last_name?: string }
+      {
+        email?: string;
+        first_name?: string;
+        last_name?: string;
+        phone_number: string;
+      }
     >({
       query: (updatedData) => ({
-        url: "auth/user", // Calls Next.js API route
+        url: "auth/user/", // Calls Next.js API route
         method: "PUT",
         body: updatedData, // Includes userId in body
       }),
@@ -184,8 +190,8 @@ export const authApi = api.injectEndpoints({
     editUserImage: builder.mutation<any, { formData: FormData }>({
       query: ({ formData }) => {
         return {
-          url: "auth/user",
-          method: "PATCH",
+          url: "auth/userImg/",
+          method: "PUT",
           body: formData,
         };
       },
@@ -228,5 +234,5 @@ export const {
   // useLazyResendVerificationQuery,
   // useForgotPasswordMutation,
   // useResetPasswordMutation,
-  // useDeleteAccountMutation,
+  useDeleteAccountMutation,
 } = authApi;

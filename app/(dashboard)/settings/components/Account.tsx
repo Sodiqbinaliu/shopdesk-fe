@@ -11,6 +11,7 @@ import {
   useGetUserQuery,
 } from "@/redux/features/auth/auth.api";
 import { toast } from "sonner";
+import { DeactivateModal } from "./DeactivateModal";
 
 function Account() {
   const { data, isLoading } = useGetUserQuery();
@@ -59,11 +60,11 @@ function Account() {
     if (!firstName || !lastName) return;
 
     try {
-     await editUser({
-        id: data?.id || "",
+      await editUser({
         first_name: firstName,
         last_name: lastName,
         email: "odionsamuel2005@gmail.com",
+        phone_number: data?.phone_number || "",
       }).unwrap();
       toast.success("User updated successfully!");
     } catch (err) {
@@ -95,18 +96,15 @@ function Account() {
               onClick={handleSubmit}
               className=" px-6 py-3 text-base cursor-pointer"
             >
-                {editLoading ? (
+              {editLoading ? (
                 <>
                   {" "}
                   <Loader2 className="h-6 w-6 animate-spin text-gray-500" />
                   Updating...
                 </>
               ) : (
-                <>
-                   Save
-                </>
+                <>Save</>
               )}
-            
             </Button>
           </div>
         </div>
@@ -138,7 +136,6 @@ function Account() {
               variant="outline"
               className="py-3 px-6 rounded-[12px] bg-white border border-[#1b1b1b] text-[#1b1b1b]"
               onClick={handleButtonClick}
- 
             >
               {editImageLoading ? (
                 <>
@@ -204,9 +201,11 @@ function Account() {
         </div>
       </div>
       <div className="mt-6">
-        <Button className="py-3 px-6 bg-[#FF000D] text-base hover:bg-[#FF000D] cursor-pointer">
-          Deactivate Account
-        </Button>
+        <DeactivateModal>
+          <Button className="py-3 px-6 bg-[#FF000D] text-base hover:bg-[#FF000D] cursor-pointer">
+            Deactivate Account
+          </Button>
+        </DeactivateModal>
       </div>
     </>
   );
