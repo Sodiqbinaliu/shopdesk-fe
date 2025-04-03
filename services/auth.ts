@@ -84,10 +84,9 @@ export async function createOrg(orgData: {
   }
 }
 
-export const uploadImage = async (file: File,id) => {
+export const uploadImage = async (file: File, id: string) => {
   const token = await getAccessToken();
-  const url = `https://api.timbu.cloud/users/image/?user_id=${id}`;
-  
+  const url = `https://api.timbu.cloud/users/image/?user_id=${id}`;  
   const formData = new FormData();
   formData.append("file", file);
 
