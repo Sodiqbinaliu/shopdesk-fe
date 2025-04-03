@@ -111,7 +111,7 @@ export const salesApi = api.injectEndpoints({
         method: "POST",
         body: { organization_id, customer_id, currency_code, products_sold },
       }),
-      invalidatesTags: ["Sale"],
+      invalidatesTags: ["Sale", "Product"],
     }),
     getSales: builder.query<
       GetSalesResponse,

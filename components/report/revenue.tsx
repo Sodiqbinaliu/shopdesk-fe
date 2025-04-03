@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronDownIcon } from 'lucide-react';
 import {
   DropdownMenu,
@@ -9,9 +9,41 @@ import {
 } from '@/components/ui/dropdown-menu';
 import Image from 'next/image';
 import RevenueGraph from './RevenueGraph';
+import { useStore } from '@/store/useStore';
 
 const RevenueReport = () => {
+  const organizationId = useStore((state) => state.organizationId);
   const [selectedItemType, setSelectedItemType] = useState<string>('');
+  const [totalItemsSold, setTotalItemsSold] = useState<number>(0);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!organizationId) return;
+
+    const fetchTotalItemsSold = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/reports/sales?organization_id=${organizationId}&range=${selectedItemType || 'Monthly'}`);
+
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.error('Error response body:', errorText);
+          throw new Error('Failed to fetch data');
+        }
+
+        const data = await res.json();
+        console.log('Fetched total items sold:', data);
+        setTotalItemsSold(data.total || 0);
+      } catch (error) {
+        console.error('Failed to fetch total items sold:', error);
+        setTotalItemsSold(0);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTotalItemsSold();
+  }, [organizationId, selectedItemType]);
 
   return (
     <div>
@@ -73,16 +105,25 @@ const RevenueReport = () => {
             </div>
           </div>
           <div className='h-48 rounded flex items-center justify-center'>
-            <div className='flex flex-col items-center gap-4'>
-              <Image
-                src='/icons/emptyState.svg'
-                alt='Sales Table Icon'
-                className='mx-auto size-fit'
-                width={56}
-                height={56}
-              />
-              <p className='text-[20px] text-gray-500'>No items sold yet</p>
-            </div>
+            {loading ? (
+              <p className='text-sm text-gray-400'>Loading...</p>
+            ) : totalItemsSold > 0 ? (
+              <div className='flex flex-col items-center gap-2'>
+                <p className='text-[32px] font-bold text-black'>{totalItemsSold}</p>
+                <p className='text-[14px] text-gray-500'>Items sold</p>
+              </div>
+            ) : (
+              <div className='flex flex-col items-center gap-4'>
+                <Image
+                  src='/icons/emptyState.svg'
+                  alt='Sales Table Icon'
+                  className=''
+                  width={56}
+                  height={56}
+                />
+                <p className='text-[20px] text-gray-500'>No items sold yet</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

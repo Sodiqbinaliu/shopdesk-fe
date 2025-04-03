@@ -38,12 +38,19 @@ const RevenueGraph = () => {
     isRevenueError,
     metrics,
   } = useStore();
+  
+  const [isHydrated, setIsHydrated] = useState(false);
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+  
   useEffect(() => {
     fetchRevenue();
   }, [fetchRevenue]);
+  
   const [selectedDataType, setSelectedDataType] = useState<string>('');
 
-  const isEmpty = revenueData.length === 0;
+  const isEmpty = !revenueData || revenueData.length === 0;
 
   const dummyChartData = {
     labels: [
@@ -94,10 +101,9 @@ const RevenueGraph = () => {
     ],
   };
 
-  const chartData: ChartData<'line', number[], string> =
-    isRevenueLoading || isEmpty || isRevenueError
-      ? dummyChartData
-      : {
+  const chartData: ChartData<'line', number[], string> = 
+    revenueData && revenueData.length > 0 && !isRevenueError
+      ? {
           labels: [
             'Jan',
             'Feb',
@@ -115,7 +121,7 @@ const RevenueGraph = () => {
           datasets: [
             {
               label: 'Weekly Revenue',
-              data: revenueData as number[],
+              data: revenueData,
               borderColor: '#4f46e5',
               backgroundColor: 'rgba(79, 70, 229, 0.2)',
               tension: 0.3,
@@ -127,7 +133,8 @@ const RevenueGraph = () => {
               pointHoverBorderColor: '#4f46e5',
             },
           ],
-        };
+        }
+      : dummyChartData;
 
   const options: ChartOptions<'line'> = {
     responsive: true,
@@ -241,7 +248,7 @@ const RevenueGraph = () => {
                     className={`text-[12px] font-circular-normal ${selectedDataType ? 'text-black' : 'text-[#B8B8B8]'}`}
                   >
                     {selectedDataType || 'Monthly'}
-                  </span>
+lassNa            </span>
                 </div>
                 <ChevronDownIcon className='h-4 w-4 text-gray-400' />
               </button>
@@ -295,7 +302,7 @@ const RevenueGraph = () => {
         <p className='text-sm text-gray-400 mb-2'>No revenue data available</p>
       )}
       <div className='w-full max-w-full sm:max-w-[100%] md:max-w-[100%] lg:max-w-[100%] h-[250px]'>
-        <Line data={chartData} options={options} />
+        {isHydrated && <Line data={chartData} options={options} />}
       </div>
     </div>
   );

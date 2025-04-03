@@ -63,7 +63,7 @@ const ProductList = ({
               </div>
               <div className='flex items-center gap-3'>
                 <span className='font-sans text-[#2A2A2A] text-lg font-medium leading-7 tracking-normal'>
-                  {item.selling_price || 'N/A'}
+                  ₦ {item.selling_price || item.current_price[0]?.NGN[0]}
                 </span>
                 <span className='text-[#E9EEF3]'>|</span>
                 <span className='font-sans text-[#2A2A2A] px-2 text-lg font-medium leading-7 tracking-normal'>

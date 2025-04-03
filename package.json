@@ -37,7 +37,7 @@
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.477.0",
     "next": "15.2.1",
-    "next-themes": "^0.4.4",
+    "next-themes": "^0.4.6",
     "radix-ui": "^1.1.3",
     "react": "^19.0.0",
     "react-chartjs-2": "^5.3.0",
@@ -46,7 +46,7 @@
     "react-redux": "^9.2.0",
     "redux-persist": "^6.0.0",
     "shopdesk": "file:",
-    "sonner": "^2.0.2",
+    "sonner": "^2.0.3",
     "swiper": "^11.2.6",
     "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7",
@@ -81,7 +81,11 @@
     "webpack": "^5.98.0"
   },
   "lint-staged": {
-    "**/*.{ts,tsx}": ["bunx tsc --noEmit --skipLibCheck"],
-    "**/*.{js,ts,jsx,tsx}": ["bunx next lint --fix"]
+    "**/*.{ts,tsx}": [
+      "bunx tsc --noEmit --skipLibCheck"
+    ],
+    "**/*.{js,ts,jsx,tsx}": [
+      "bunx next lint --fix"
+    ]
   }
 }

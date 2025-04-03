@@ -107,3 +107,44 @@ export async function POST(req: Request) {
     );
   }
 }
+
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const organization_id = searchParams.get("organization_id");
+
+  if (!organization_id) {
+    return NextResponse.json({ error: "Missing organization_id" }, { status: 400 });
+  }
+
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("access_token")?.value;
+
+  if (!accessToken) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const response = await fetch(
+      `https://api.timbu.cloud/products?organization_id=${organization_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Accept: "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch products: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return NextResponse.json({ products: data.items || [] });
+  } catch (error: any) {
+    console.error("Error fetching products:", error);
+    return NextResponse.json(
+      { error: error.message || "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
