@@ -1,76 +1,129 @@
-'use client';
+"use client";
 
-import { useRef, useState } from 'react';
-import { FaTimes } from 'react-icons/fa';
-import Image from 'next/image';
-import DeleteImage from './delete-image';
+import { useRef, useState } from "react";
+import { FaTimes } from "react-icons/fa";
+import Image from "next/image";
+import DeleteImage from "./delete-image";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@/redux/store";
+import {
+  addImages,
+  removeImage,
+} from "@/redux/features/productImage/productImage.slice";
+import { toast } from "sonner";
+import {
+  useCreateProductImageMutation,
+  useDeleteProductImageMutation,
+} from "@/redux/features/productImage/productImage.api";
+import { useStore } from "@/store/useStore";
+import { Loader2 } from "lucide-react";
 
 interface EditImageProps {
-  existingImages: { id: string; src: string }[];
-  onSave: (images: { id: string; src: string }[]) => void;
+  onSave: (images: { filename: string; url: string }[]) => void;
   itemName: string;
   onDeleteImage: (imageId: string) => void;
   onCancel: () => void;
   isOpen: boolean;
+  product_id: string;
 }
 
 export default function EditImage({
   itemName,
-  existingImages,
-  // onDeleteImage,
   onSave,
   onCancel,
   isOpen,
+  product_id,
 }: EditImageProps) {
-  const [images, setImages] = useState(existingImages);
   const [error, setError] = useState<string | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [imageToDelete, setImageToDelete] = useState<{
-    id: string;
-    src: string;
+    filename: string;
+    url: string;
   } | null>(null);
+  const [uploadFiles, setUploadFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dispatch = useDispatch();
+  const productImages = useSelector(
+    (state: RootState) => state.productImages.images
+  );
+  const organizationId = useStore((state) => state.organizationId);
+  const [createProductImage, { isLoading }] = useCreateProductImageMutation();
 
-  if (!isOpen) return null;
+  const [deleteProductImage, { isLoading: deletingImage }] =
+    useDeleteProductImageMutation();
+
+  //if (!isOpen) return null;
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files) return;
 
-    const validFormats = ['image/jpeg', 'image/png'];
+    const validFormats = ["image/jpeg", "image/png"];
     const files = Array.from(event.target.files);
 
     const invalidFiles = files.filter(
       (file) => !validFormats.includes(file.type)
     );
-
-    if (invalidFiles.length) {
-      setError('Invalid file format. Please upload a valid image file.');
+    if (invalidFiles.length > 0) {
+      setError("Only JPG/PNG images are supported");
       return;
     }
 
-    setError(null);
+    setUploadFiles((prev) => [...prev, ...files]);
 
     const newImages = files.map((file) => ({
-      id: URL.createObjectURL(file),
-      src: URL.createObjectURL(file),
+      filename: file.name,
+      url: URL.createObjectURL(file),
     }));
+    dispatch(addImages(newImages));
 
-    setImages((prevImages) => [...prevImages, ...newImages].slice(0, 3));
+    setError(null);
   };
 
-  const handleDeleteClick = (image: { id: string; src: string }) => {
+  const handleSave = async () => {
+    if (uploadFiles.length === 0) return;
+
+    try {
+      const formData = new FormData();
+      formData.append("organization_id", organizationId);
+      uploadFiles.forEach((file) => formData.append("product_image", file));
+
+      const uploadImages = await createProductImage({
+        product_id,
+        formData,
+      }).unwrap();
+
+      toast.success("Image uploaded successfully");
+      onSave(productImages || []);
+
+      setUploadFiles([]);
+    } catch (error) {
+      toast.error("Could Not Upload Image");
+    }
+  };
+
+  const handleDeleteClick = (image: { filename: string; url: string }) => {
     setImageToDelete(image);
     setIsDeleteModalOpen(true);
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (imageToDelete) {
-      const updatedImages = images.filter(
-        (image) => image.id !== imageToDelete.id
-      );
-      setImages(updatedImages);
-      onSave(updatedImages);
-      setIsDeleteModalOpen(false);
+      try {
+        const deleteImage = await deleteProductImage({
+          organization_id: organizationId,
+          product_id,
+          filename: imageToDelete.filename,
+        }).unwrap();
+        dispatch(removeImage(imageToDelete.filename));
+        const updatedImages = (productImages || []).filter(
+          (image) => image.filename !== imageToDelete.filename
+        );
+        onSave(updatedImages);
+        setIsDeleteModalOpen(false);
+        toast.success("Image deleted successfully");
+      } catch (error) {
+        toast.error("Image could not be deleted");
+      }
     }
   };
 
@@ -79,151 +132,172 @@ export default function EditImage({
   };
 
   return (
-    <>
-      {/* Overlay */}
-      <div className='lg:fixed lg:inset-0 bg-black opacity-50 z-40'></div>
+    isOpen && (
+      <>
+        {/* Overlay */}
+        <div className="lg:fixed lg:inset-0 bg-black opacity-50 z-40"></div>
 
-      {/* Edit Modal */}
-      <div className='lg:fixed lg:inset-0 flex items-center justify-center z-50'>
-        <div className='bg-white rounded-lg max-w-3xl w-full p-4'>
-          {/* Header */}
-          <div className='flex justify-between items-center mb-4'>
-            <div className='flex gap-2 items-center'>
-              <Image
-                src='/modal-images/image-icon.svg'
-                alt='image icon'
-                width={48}
-                height={48}
-                className='w-8 h-8 md:w-12 md:h-12'
-              />
-              <h2 className='text-sm md:text-xl font-circular-bold'>
-                Edit Stock Images
-              </h2>
-            </div>
-            <button
-              type='button'
-              aria-label='Close'
-              onClick={onCancel}
-              className='p-[9px] border border-[#1B1B1B] rounded-[9px] cursor-pointer hover:bg-[#D0D0D0]'
-            >
-              <FaTimes />
-            </button>
-          </div>
-
-          {/* Item Name */}
-          <div className='mb-4'>
-            <p className='text-gray-600 mb-1'>Item Name</p>
-            <h3 className='text-lg font-medium'>{itemName}</h3>
-          </div>
-
-          <div className='w-full mb-6'>
-            {images.length === 0 ? (
-              <div
-                onClick={() => fileInputRef.current?.click()}
-                className='w-full h-56 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50'
+        {/* Edit Modal */}
+        <div className="lg:fixed lg:inset-0 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg max-w-3xl w-full p-4">
+            {/* Header */}
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex gap-2 items-center">
+                <Image
+                  src="/modal-images/image-icon.svg"
+                  alt="image icon"
+                  width={48}
+                  height={48}
+                  className="w-8 h-8 md:w-12 md:h-12"
+                />
+                <h2 className="text-sm md:text-xl font-circular-bold">
+                  Edit Stock Images
+                </h2>
+              </div>
+              <button
+                type="button"
+                aria-label="Close"
+                onClick={onCancel}
+                className="p-[9px] border border-[#1B1B1B] rounded-[9px] cursor-pointer hover:bg-[#D0D0D0]"
               >
-                <div className='mb-2'>
-                  <Image
-                    src='/icons/image-plus.svg'
-                    alt='Upload image'
-                    width={48}
-                    height={48}
+                <FaTimes />
+              </button>
+            </div>
+
+            {/* Item Name */}
+            <div className="mb-4">
+              <p className="text-gray-600 mb-1">Item Name</p>
+              <h3 className="text-lg font-medium">{itemName}</h3>
+            </div>
+
+            <div className="w-full mb-6">
+              {productImages?.length === 0 ? (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full h-56 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50"
+                >
+                  <div className="mb-2">
+                    <Image
+                      src="/icons/image-plus.svg"
+                      alt="Upload image"
+                      width={48}
+                      height={48}
+                    />
+                  </div>
+                  <p className="text-gray-500 mb-1">
+                    Upload 1 - 3 images for this product
+                  </p>
+                  <p className="text-sm text-gray-400">
+                    Supported formats: .jpg & .png
+                  </p>
+                  <input
+                    type="file"
+                    accept=".jpg,.jpeg,.png"
+                    multiple
+                    className="hidden"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
                   />
                 </div>
-                <p className='text-gray-500 mb-1'>
-                  Upload 1 - 3 images for this product
-                </p>
-                <p className='text-sm text-gray-400'>
-                  Supported formats: .jpg & .png
-                </p>
-                <input
-                  type='file'
-                  accept='.jpg,.jpeg,.png'
-                  multiple
-                  className='hidden'
-                  ref={fileInputRef}
-                  onChange={handleImageUpload}
-                />
-              </div>
-            ) : (
-              <div className='w-full border-2 border-dashed border-gray-300 rounded-lg p-4'>
-                <div className='grid grid-cols-3 gap-4'>
-                  {/* Display existing images */}
-                  {images.map((image, index) => (
-                    <div
-                      key={image.id}
-                      className='relative border border-dashed border-gray-300 rounded-lg p-1 aspect-square'
-                    >
-                      <Image
-                        src={image.src}
-                        alt={`Product image ${index + 1}`}
-                        layout='fill'
-                        objectFit='cover'
-                        className='rounded-lg'
-                      />
-                      <button
-                        onClick={() => handleDeleteClick(image)}
-                        className='absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-white text-red-500 rounded-full border border-red-500 hover:bg-[#FFCCCF] w-6 h-6 flex items-center justify-center shadow-md'
+              ) : (
+                <div className="w-full border-2 border-dashed border-gray-300 rounded-lg p-4">
+                  <div className="grid grid-cols-3 gap-4">
+                    {/* Display existing images */}
+                    {productImages?.map((image, index) => (
+                      <div
+                        key={image.filename}
+                        className="relative border border-dashed border-gray-300 rounded-lg p-1 aspect-square"
                       >
-                        <FaTimes size={14} />
-                      </button>
-                    </div>
-                  ))}
+                        <Image
+                          src={image.url}
+                          alt={`Product image ${index + 1}`}
+                          layout="fill"
+                          objectFit="cover"
+                          className="rounded-lg"
+                        />
+                        <button
+                          onClick={() => handleDeleteClick(image)}
+                          className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-white text-red-500 rounded-full border border-red-500 hover:bg-[#FFCCCF] w-6 h-6 flex items-center justify-center shadow-md"
+                        >
+                          <FaTimes size={14} />
+                        </button>
+                      </div>
+                    ))}
 
-                  {/* Add more images button (if less than 3) */}
-                  {images.length < 3 && (
-                    <div
-                      onClick={() => fileInputRef.current?.click()}
-                      className='border border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-50 aspect-square'
-                    >
-                      <span className='text-gray-400 text-4xl'>
-                        <FaTimes size={12} />
-                      </span>
+                    {/* Add more images button (if less than 3) */}
+                    {productImages && productImages.length < 3 && (
+                      <div
+                        onClick={() => fileInputRef.current?.click()}
+                        className="border border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-50 aspect-square"
+                      >
+                        <span className="text-gray-400 text-4xl">
+                          <FaTimes size={12} />
+                        </span>
 
-                      <input
-                        type='file'
-                        accept='.jpg,.jpeg,.png'
-                        multiple
-                        className='hidden'
-                        ref={fileInputRef}
-                        onChange={handleImageUpload}
-                      />
-                    </div>
+                        <input
+                          type="file"
+                          accept=".jpg,.jpeg,.png"
+                          multiple
+                          className="hidden"
+                          ref={fileInputRef}
+                          onChange={handleImageUpload}
+                        />
+                      </div>
+                    )}
+                  </div>
+                  {/* Error Message */}
+                  {error && (
+                    <p className="text-red-500 text-sm mt-2">{error}</p>
                   )}
                 </div>
-                {/* Error Message */}
-                {error && <p className='text-red-500 text-sm mt-2'>{error}</p>}
-              </div>
-            )}
-          </div>
+              )}
+            </div>
 
-          {/* Footer Buttons */}
-          <div className='flex flex-col md:flex-row md:justify-end gap-3 '>
-            <button
-              onClick={onCancel}
-              className='px-4 py-2 border border-[#1B1B1B] rounded-md text-[#2A2A2A] hover:text-white hover:bg-[#2A2A2A]'
-            >
-              Cancel
-            </button>
-            <button
-              onClick={() => onSave(images)}
-              className='px-6 py-2 border border-[#1B1B1B] rounded-md text-[#2A2A2A] hover:text-white hover:bg-[#2A2A2A]'
-            >
-              Save
-            </button>
+            {/* Footer Buttons */}
+            <div className="flex flex-col md:flex-row md:justify-end gap-3 ">
+              <button
+                onClick={onCancel}
+                className="px-4 py-2 border border-[#1B1B1B] rounded-md text-[#2A2A2A] hover:text-white hover:bg-[#2A2A2A]"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleSave()}
+                className="px-6 py-2 border border-[#1B1B1B] rounded-md text-[#2A2A2A] hover:text-white hover:bg-[#2A2A2A]"
+              >
+                {isLoading ? (
+                  <div className="flex gap-1 items-center">
+                    <Loader2 className="animate-spin" />
+                    <span>Saving...</span>
+                  </div>
+                ) : (
+                  "Save"
+                )}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Delete Image Modal */}
-      {imageToDelete && (
-        <DeleteImage
-          image={imageToDelete}
-          isOpen={isDeleteModalOpen}
-          onDelete={handleDeleteConfirm}
-          onCancel={handleDeleteCancel}
-        />
-      )}
-    </>
+        {/* Delete Image Modal */}
+        {imageToDelete && (
+          <DeleteImage
+            image={imageToDelete}
+            isOpen={isDeleteModalOpen}
+            onDelete={handleDeleteConfirm}
+            onCancel={handleDeleteCancel}
+            deleteText={
+              deletingImage ? (
+                <div className="flex gap-1 items-center">
+                  <Loader2 className="animate-spin" />
+                  <span>Deleting...</span>
+                </div>
+              ) : (
+                "Delete"
+              )
+            }
+          />
+        )}
+      </>
+    )
   );
 }

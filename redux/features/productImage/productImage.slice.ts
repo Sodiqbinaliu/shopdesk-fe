@@ -10,21 +10,32 @@ const initialState: InitialState = {
 };
 
 const productImageSlice = createSlice({
-  name: "prices",
+  name: "productImages", 
   initialState,
   reducers: {
-    setImages: (state, action: PayloadAction<ProductImagesResponse[]>) => {
+    setImages: (
+      state,
+      action: PayloadAction<ProductImagesResponse[] | null>
+    ) => {
       state.images = action.payload;
     },
-    removeImage: (state, action: PayloadAction<ProductImagesResponse>) => {
-      state.images =
-        state.images?.filter(
-          (image) => image.filename !== action.payload.filename
-        ) ?? state.images;
+    addImages: (state, action: PayloadAction<ProductImagesResponse[]>) => {
+      state.images = [...(state.images || []), ...action.payload];
+    },
+    removeImage: (state, action: PayloadAction<string>) => {
+      if (state.images) {
+        state.images = state.images.filter(
+          (image) => image.filename !== action.payload
+        );
+      }
+    },
+    resetImages: (state) => {
+      state.images = null;
     },
   },
 });
 
-export const { setImages, removeImage } = productImageSlice.actions;
+export const { setImages, addImages, removeImage, resetImages } =
+  productImageSlice.actions;
 
 export default productImageSlice.reducer;

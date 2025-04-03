@@ -1,7 +1,14 @@
-import { api } from '@/redux/api';
+import { api } from "@/redux/api";
 
 interface ProductPrice {
   [currency: string]: [number, number | null];
+}
+
+interface Photos {
+  filename: string;
+  position: number;
+  model_id: string;
+  url: string;
 }
 
 export type Product = {
@@ -30,7 +37,7 @@ export type Product = {
   selling_price: string | null;
   discounted_price: number | null;
   buying_price: number | null;
-  photos: string[];
+  photos: Photos[];
   attributes: Record<string, any>;
 };
 
@@ -65,18 +72,18 @@ export const accessControlApi = api.injectEndpoints({
     >({
       query: ({ organization_id }) => ({
         url: `product/get?organization_id=${organization_id}`,
-        method: 'GET',
+        method: "GET",
       }),
-      providesTags: ['Product'],
+      providesTags: ["Product", "ProductImage"],
       keepUnusedDataFor: 3600,
     }),
     createProduct: builder.mutation<CreateProductResponse, any>({
       query: (productData) => ({
         url: `product/create`,
-        method: 'POST',
+        method: "POST",
         body: productData,
       }),
-      invalidatesTags: ['Product'],
+      invalidatesTags: ["Product"],
     }),
   }),
 });

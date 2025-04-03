@@ -2,9 +2,9 @@ import { api } from "@/redux/api";
 
 export interface ProductImagesResponse {
   url: string;
-  position: number;
+  position?: number;
   filename: string;
-  model_id: string;
+  model_id?: string;
 }
 
 export const productImageApi = api.injectEndpoints({
