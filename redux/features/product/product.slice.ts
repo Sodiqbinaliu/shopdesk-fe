@@ -16,6 +16,7 @@ interface CartState {
   totalQuantity: number;
   totalPrice: number;
   salesCount: number;
+  saleSuccessful: boolean;
 }
 
 const initialState: CartState = {
@@ -24,6 +25,7 @@ const initialState: CartState = {
   totalQuantity: 0,
   totalPrice: 0,
   salesCount: 0,
+  saleSuccessful: false,
 };
 
 const cartSlice = createSlice({
@@ -104,6 +106,9 @@ const cartSlice = createSlice({
     updateSalesCountFromData: (state, action: PayloadAction<number>) => {
       state.salesCount = action.payload;
     },
+    toggleSaleSuccessful: (state) => {
+      state.saleSuccessful = !state.saleSuccessful;
+    },
   },
 });
 
@@ -114,11 +119,13 @@ export const {
   clearCart,
   setSearchText,
   updateSalesCountFromData,
+  toggleSaleSuccessful,
 } = cartSlice.actions;
 export const selectCartItems = (state: RootState) => state.cart.items;
 export const selectSearchText = (state: RootState) => state.cart.searchText;
 export const selectTotalQuantity = (state: RootState) =>
   state.cart.totalQuantity;
 export const selectTotalPrice = (state: RootState) => state.cart.totalPrice;
+export const isSaleSuccessful = (state: RootState) => state.cart.saleSuccessful;
 
 export default cartSlice.reducer;
